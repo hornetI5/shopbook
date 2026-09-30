@@ -1,3747 +1,1971 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Diamond Books</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
-:root {
-    --bg: #090d16;
-    --bg2: #101827;
-    --panel: #151f31;
-    --panel2: #1b2940;
-    --border: #2d405f;
-    --text: #f2f6ff;
-    --muted: #9ba9c2;
-    --diamond: #59e5ff;
-    --diamond2: #249bc4;
-    --green: #55e08a;
-    --red: #ff6578;
-    --yellow: #ffd85c;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-        radial-gradient(circle at 20% 0%, #163d59 0, transparent 35%),
-        radial-gradient(circle at 90% 10%, #22204b 0, transparent 30%),
-        var(--bg);
-    color: var(--text);
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-button,
-input,
-textarea {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-button:disabled {
-    opacity: .45;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* ---------------- HEADER ---------------- */
-
-header {
-    min-height: 72px;
-    padding: 10px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    background: rgba(10, 15, 27, .92);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    backdrop-filter: blur(12px);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 900;
-    font-size: 22px;
-}
-
-.logoDiamond {
-    width: 30px;
-    height: 30px;
-    background: linear-gradient(135deg, #c9fbff, #41d8ff 50%, #147aa4);
-    transform: rotate(45deg);
-    box-shadow: 0 0 20px rgba(89, 229, 255, .45);
-    flex-shrink: 0;
-}
-
-.logo span {
-    color: var(--diamond);
-}
-
-.headerRight {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.diamondBalance {
-    padding: 9px 13px;
-    border-radius: 10px;
-    background: #102b3c;
-    border: 1px solid #27637a;
-    color: var(--diamond);
-    font-weight: bold;
-}
-
-/* ---------------- BUTTONS ---------------- */
-
-.btn {
-    border: 0;
-    border-radius: 9px;
-    padding: 10px 15px;
-    color: white;
-    background: #263652;
-    transition: .15s;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.15);
-}
-
-.btnPrimary {
-    background: linear-gradient(135deg, #1fa9d2, #147ca4);
-}
-
-.btnGreen {
-    background: #218b52;
-}
-
-.btnRed {
-    background: #a83245;
-}
-
-.btnYellow {
-    background: #9a7718;
-}
-
-.btnSmall {
-    padding: 7px 10px;
-    font-size: 13px;
-}
-
-/* ---------------- MAIN ---------------- */
-
-main {
-    max-width: 1250px;
-    margin: auto;
-    padding: 35px 20px 70px;
-}
-
-.hero {
-    text-align: center;
-    margin-bottom: 35px;
-}
-
-.hero h1 {
-    margin: 0;
-    font-size: clamp(34px, 6vw, 60px);
-    letter-spacing: -2px;
-}
-
-.hero h1 span {
-    color: var(--diamond);
-    text-shadow: 0 0 25px rgba(89, 229, 255, .3);
-}
-
-.hero p {
-    color: var(--muted);
-    font-size: 16px;
-}
-
-/* ---------------- BOOKS ---------------- */
-
-.booksGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 18px;
-}
-
-.book {
-    background: linear-gradient(160deg, #172238, #111a2a);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 20px;
-    transition: .18s;
-}
-
-.book:hover {
-    transform: translateY(-4px);
-    border-color: #4e719d;
-    box-shadow: 0 12px 35px rgba(0,0,0,.25);
-}
-
-.bookIcon {
-    width: 64px;
-    height: 76px;
-    margin: 0 auto 17px;
-    background: linear-gradient(135deg, #76522d, #432b18);
-    border: 3px solid #a67a45;
-    border-radius: 4px;
-    position: relative;
-    box-shadow: 5px 5px 0 rgba(0,0,0,.25);
-}
-
-.bookIcon::after {
-    content: "";
-    position: absolute;
-    width: 35px;
-    height: 4px;
-    background: #d2a568;
-    top: 27px;
-    left: 12px;
-    box-shadow: 0 12px #d2a568;
-}
-
-.book h3 {
-    margin: 0 0 8px;
-    text-align: center;
-}
-
-.description {
-    color: var(--muted);
-    font-size: 14px;
-    min-height: 42px;
-}
-
-.price {
-    color: var(--diamond);
-    font-weight: 900;
-    font-size: 21px;
-}
-
-.oldPrice {
-    text-decoration: line-through;
-    color: #77839a;
-    font-size: 14px;
-    margin-right: 5px;
-}
-
-.discount {
-    display: inline-block;
-    margin-top: 7px;
-    padding: 4px 7px;
-    border-radius: 6px;
-    background: rgba(85,224,138,.12);
-    color: var(--green);
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.stock {
-    color: var(--muted);
-    font-size: 13px;
-    margin: 12px 0;
-}
-
-.stock.low {
-    color: var(--yellow);
-}
-
-.stock.empty {
-    color: var(--red);
-}
-
-.bookActions {
-    display: flex;
-    gap: 8px;
-}
-
-.bookActions button {
-    flex: 1;
-}
-
-/* ---------------- PANELS ---------------- */
-
-.panel {
-    background: rgba(21, 31, 49, .9);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.panel h2 {
-    margin-top: 0;
-}
-
-/* ---------------- LOGIN ---------------- */
-
-#loginScreen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.loginBox {
-    width: min(440px, 100%);
-    background: rgba(21, 31, 49, .95);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 30px;
-    box-shadow: 0 25px 80px rgba(0,0,0,.4);
-}
-
-.loginBox h1 {
-    text-align: center;
-}
-
-.loginBox p {
-    color: var(--muted);
-    text-align: center;
-}
-
-input,
-textarea {
-    width: 100%;
-    padding: 12px;
-    background: #0c1422;
-    color: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    outline: none;
-}
-
-textarea {
-    min-height: 90px;
-    resize: vertical;
-}
-
-input:focus,
-textarea:focus {
-    border-color: var(--diamond);
-}
-
-.formGroup {
-    margin: 13px 0;
-}
-
-.formGroup label {
-    display: block;
-    color: var(--muted);
-    margin-bottom: 6px;
-    font-size: 14px;
-}
-
-.loginBox .btn {
-    width: 100%;
-    margin-top: 10px;
-}
-
-/* ---------------- ADMIN ---------------- */
-
-.adminGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
-}
-
-.order {
-    padding: 15px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    background: #111a2a;
-}
-
-.orderTitle {
-    font-weight: bold;
-}
-
-.orderMeta {
-    color: var(--muted);
-    font-size: 13px;
-    margin: 6px 0 10px;
-    line-height: 1.7;
-}
-
-.orderItems {
-    margin: 10px 0;
-    padding-left: 18px;
-    color: #dce6f7;
-}
-
-.adminBook {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.adminBook:last-child {
-    border-bottom: 0;
-}
-
-.adminBookControls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    align-items: center;
-}
-
-.adminBookControls input {
-    width: 90px;
-    padding: 7px;
-}
-
-.player {
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    background: #111a2a;
-}
-
-.playerControls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
-}
-
-.playerControls input {
-    width: 100px;
-    padding: 7px;
-}
-
-/* ---------------- TOAST ---------------- */
-
-#toastContainer {
-    position: fixed;
-    right: 18px;
-    bottom: 18px;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.toast {
-    padding: 13px 17px;
-    border-radius: 10px;
-    background: #172238;
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    animation: toastIn .2s ease;
-    max-width: 400px;
-}
-
-.toast.success {
-    border-color: #2b8e58;
-}
-
-.toast.error {
-    border-color: #a83c4e;
-}
-
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ---------------- MODAL ---------------- */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 90;
-    padding: 20px;
-}
-
-.modalBox {
-    width: min(500px, 100%);
-    background: #151f31;
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 25px;
-}
-
-/* ---------------- RESPONSIVE ---------------- */
-
-@media(max-width: 650px) {
-    header {
-        padding: 10px 12px;
-    }
-
-    .logo {
-        font-size: 17px;
-    }
-
-    .diamondBalance {
-        font-size: 13px;
-    }
-
-    main {
-        padding: 25px 12px 50px;
-    }
-
-    .adminBook {
-        grid-template-columns: 1fr;
-    }
+*{box-sizing:border-box}
+:root{
+--bg:#090d16;--bg2:#101827;--panel:#151f31;--panel2:#1b2940;
+--border:#2d405f;--text:#f2f6ff;--muted:#9ba9c2;
+--diamond:#59e5ff;--diamond2:#249bc4;--green:#55e08a;
+--red:#ff6578;--yellow:#ffd85c
+}
+body{
+margin:0;min-height:100vh;
+background:
+radial-gradient(circle at 20% 0%,#163d59 0,transparent 35%),
+radial-gradient(circle at 90% 10%,#22204b 0,transparent 30%),var(--bg);
+color:var(--text);font-family:Arial,Helvetica,sans-serif
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.hidden{display:none!important}
+
+header{
+min-height:72px;padding:10px 28px;display:flex;align-items:center;
+justify-content:space-between;gap:15px;background:rgba(10,15,27,.92);
+border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;
+backdrop-filter:blur(12px)
+}
+.logo{display:flex;align-items:center;gap:12px;font-weight:900;font-size:22px}
+.logoDiamond{
+width:30px;height:30px;background:linear-gradient(135deg,#c9fbff,#41d8ff 50%,#147aa4);
+transform:rotate(45deg);box-shadow:0 0 20px rgba(89,229,255,.45);flex-shrink:0
+}
+.logo span{color:var(--diamond)}
+.headerRight{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.diamondBalance{
+padding:9px 13px;border-radius:10px;background:#102b3c;border:1px solid #27637a;
+color:var(--diamond);font-weight:bold
+}
+
+.btn{
+border:0;border-radius:9px;padding:10px 15px;color:white;background:#263652;transition:.15s
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.15)}
+.btnPrimary{background:linear-gradient(135deg,#1fa9d2,#147ca4)}
+.btnGreen{background:#218b52}
+.btnRed{background:#a83245}
+.btnYellow{background:#9a7718}
+.btnSmall{padding:7px 10px;font-size:13px}
+
+main{max-width:1250px;margin:auto;padding:35px 20px 70px}
+.hero{text-align:center;margin-bottom:35px}
+.hero h1{margin:0;font-size:clamp(34px,6vw,60px);letter-spacing:-2px}
+.hero h1 span{color:var(--diamond);text-shadow:0 0 25px rgba(89,229,255,.3)}
+.hero p{color:var(--muted);font-size:16px}
+
+.booksGrid{
+display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px
+}
+.book{
+background:linear-gradient(160deg,#172238,#111a2a);border:1px solid var(--border);
+border-radius:15px;padding:20px;transition:.18s
+}
+.book:hover{
+transform:translateY(-4px);border-color:#4e719d;box-shadow:0 12px 35px rgba(0,0,0,.25)
+}
+.bookIcon{
+width:64px;height:76px;margin:0 auto 17px;background:linear-gradient(135deg,#76522d,#432b18);
+border:3px solid #a67a45;border-radius:4px;position:relative;box-shadow:5px 5px 0 rgba(0,0,0,.25)
+}
+.bookIcon::after{
+content:"";position:absolute;width:35px;height:4px;background:#d2a568;top:27px;left:12px;
+box-shadow:0 12px #d2a568
+}
+.book h3{margin:0 0 8px;text-align:center}
+.description{color:var(--muted);font-size:14px;min-height:42px}
+.price{color:var(--diamond);font-weight:900;font-size:21px}
+.oldPrice{text-decoration:line-through;color:#77839a;font-size:14px;margin-right:5px}
+.discount{
+display:inline-block;margin-top:7px;padding:4px 7px;border-radius:6px;
+background:rgba(85,224,138,.12);color:var(--green);font-size:12px;font-weight:bold
+}
+.stock{color:var(--muted);font-size:13px;margin:12px 0}
+.stock.low{color:var(--yellow)}
+.stock.empty{color:var(--red)}
+.bookActions{display:flex;gap:8px}
+.bookActions button{flex:1}
+
+.panel{
+background:rgba(21,31,49,.9);border:1px solid var(--border);
+border-radius:15px;padding:20px;margin-bottom:20px
+}
+.panel h2{margin-top:0}
+
+#loginScreen{
+min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px
+}
+.loginBox{
+width:min(440px,100%);background:rgba(21,31,49,.95);border:1px solid var(--border);
+border-radius:18px;padding:30px;box-shadow:0 25px 80px rgba(0,0,0,.4)
+}
+.loginBox h1{text-align:center}
+.loginBox p{color:var(--muted);text-align:center}
+input,textarea{
+width:100%;padding:12px;background:#0c1422;color:white;border:1px solid var(--border);
+border-radius:8px;outline:none
+}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{border-color:var(--diamond)}
+.formGroup{margin:13px 0}
+.formGroup label{display:block;color:var(--muted);margin-bottom:6px;font-size:14px}
+.loginBox .btn{width:100%;margin-top:10px}
+
+.adminGrid{
+display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px
+}
+.order{
+padding:15px;border:1px solid var(--border);border-radius:10px;
+margin-bottom:10px;background:#111a2a
+}
+.orderTitle{font-weight:bold}
+.orderMeta{color:var(--muted);font-size:13px;margin:6px 0 10px;line-height:1.7}
+.orderItems{margin:10px 0;padding-left:18px;color:#dce6f7}
+.adminBook{
+display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)
+}
+.adminBook:last-child{border-bottom:0}
+.adminBookControls{
+display:flex;flex-wrap:wrap;gap:5px;align-items:center
+}
+.adminBookControls input{width:90px;padding:7px}
+.player{
+padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#111a2a
+}
+.playerControls{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.playerControls input{width:100px;padding:7px}
+
+#toastContainer{
+position:fixed;right:18px;bottom:18px;z-index:100;
+display:flex;flex-direction:column;gap:8px
+}
+.toast{
+padding:13px 17px;border-radius:10px;background:#172238;border:1px solid var(--border);
+box-shadow:0 10px 30px rgba(0,0,0,.35);animation:toastIn .2s ease;max-width:400px
+}
+.toast.success{border-color:#2b8e58}
+.toast.error{border-color:#a83c4e}
+@keyframes toastIn{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+.modal{
+position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;
+align-items:center;justify-content:center;z-index:90;padding:20px
+}
+.modalBox{
+width:min(500px,100%);background:#151f31;border:1px solid var(--border);
+border-radius:15px;padding:25px
+}
+
+@media(max-width:650px){
+header{padding:10px 12px}
+.logo{font-size:17px}
+.diamondBalance{font-size:13px}
+main{padding:25px 12px 50px}
+.adminBook{grid-template-columns:1fr}
 }
 </style>
+
 </head>
 
 <body>
 
-<!-- =========================================================
-     LOGIN
-========================================================= -->
-
 <section id="loginScreen">
+<div class="loginBox">
 
-    <div class="loginBox">
+<div class="logo" style="justify-content:center;">
+<div class="logoDiamond"></div>
+<div>Diamond <span>Books</span></div>
+</div>
 
-        <div class="logo" style="justify-content:center;">
-            <div class="logoDiamond"></div>
-            <div>Diamond <span>Books</span></div>
-        </div>
+<h1>Bienvenue</h1>
 
-        <h1>Bienvenue</h1>
+<p>
+Choisis ton pseudo pour créer ou retrouver ton compte
+sur cet appareil.
+</p>
 
-        <p>
-            Choisis ton pseudo pour créer ou retrouver ton compte
-            sur cet appareil.
-        </p>
+<div class="formGroup">
+<label for="usernameInput">Pseudo</label>
+<input id="usernameInput" type="text" maxlength="24"
+placeholder="Ton pseudo..." autocomplete="off">
+</div>
 
-        <div class="formGroup">
-            <label for="usernameInput">Pseudo</label>
+<button class="btn btnPrimary" onclick="createAccount()">
+Entrer dans la boutique
+</button>
 
-            <input
-                id="usernameInput"
-                type="text"
-                maxlength="24"
-                placeholder="Ton pseudo..."
-                autocomplete="off"
-            >
-        </div>
+<button class="btn" onclick="showAdminLogin()">
+Connexion administrateur
+</button>
 
-        <button
-            class="btn btnPrimary"
-            onclick="createAccount()">
-
-            Entrer dans la boutique
-
-        </button>
-
-        <button
-            class="btn"
-            onclick="showAdminLogin()">
-
-            Connexion administrateur
-
-        </button>
-
-    </div>
-
+</div>
 </section>
-
-
-<!-- =========================================================
-     SHOP
-========================================================= -->
 
 <div id="shopScreen" class="hidden">
 
 <header>
 
-    <div class="logo">
-        <div class="logoDiamond"></div>
-        <div>Diamond <span>Books</span></div>
-    </div>
+<div class="logo">
+<div class="logoDiamond"></div>
+<div>Diamond <span>Books</span></div>
+</div>
 
-    <div class="headerRight">
+<div class="headerRight">
 
-        <div id="currentUser"></div>
+<div id="currentUser"></div>
 
-        <div class="diamondBalance">
-            💎 <span id="balance">0</span>
-        </div>
+<div class="diamondBalance">
+💎 <span id="balance">0</span>
+</div>
 
-        <button
-            class="btn btnSmall"
-            onclick="showOrders()">
+<button class="btn btnSmall" onclick="showOrders()">
+Mes commandes
+</button>
 
-            Mes commandes
+<button id="adminButton" class="btn btnSmall hidden" onclick="openAdmin()">
+Admin
+</button>
 
-        </button>
+<button class="btn btnSmall" onclick="logout()">
+Quitter
+</button>
 
-        <button
-            id="adminButton"
-            class="btn btnSmall hidden"
-            onclick="openAdmin()">
-
-            Admin
-
-        </button>
-
-        <button
-            class="btn btnSmall"
-            onclick="logout()">
-
-            Quitter
-
-        </button>
-
-    </div>
-
+</div>
 </header>
-
 
 <main>
 
-    <section class="hero">
+<section class="hero">
+<h1>La bibliothèque <span>Diamond</span></h1>
+<p>Achète tes livres avec des diamants.</p>
+</section>
 
-        <h1>
-            La bibliothèque
-            <span>Diamond</span>
-        </h1>
+<section class="panel">
+<h2>📚 Livres disponibles</h2>
+<div id="booksGrid" class="booksGrid">
+<p>Chargement...</p>
+</div>
+</section>
 
-        <p>
-            Achète tes livres avec des diamants.
-        </p>
-
-    </section>
-
-
-    <section class="panel">
-
-        <h2>📚 Livres disponibles</h2>
-
-        <div id="booksGrid" class="booksGrid">
-            <p>Chargement...</p>
-        </div>
-
-    </section>
-
-
-    <section
-        id="myOrdersPanel"
-        class="panel hidden">
-
-        <h2>📜 Mes commandes</h2>
-
-        <div id="myOrders"></div>
-
-    </section>
+<section id="myOrdersPanel" class="panel hidden">
+<h2>📜 Mes commandes</h2>
+<div id="myOrders"></div>
+</section>
 
 </main>
-
 </div>
-
-
-<!-- =========================================================
-     ADMIN
-========================================================= -->
 
 <div id="adminScreen" class="hidden">
 
 <header>
 
-    <div class="logo">
-        <div class="logoDiamond"></div>
-        <div>Diamond <span>Books</span> — Admin</div>
-    </div>
+<div class="logo">
+<div class="logoDiamond"></div>
+<div>Diamond <span>Books</span> — Admin</div>
+</div>
 
-    <div class="headerRight">
+<div class="headerRight">
 
-        <button
-            class="btn btnSmall"
-            onclick="closeAdmin()">
+<button class="btn btnSmall" onclick="closeAdmin()">
+Retour boutique
+</button>
 
-            Retour boutique
+<button class="btn btnSmall" onclick="loadAdmin()">
+🔄 Actualiser
+</button>
 
-        </button>
-
-        <button
-            class="btn btnSmall"
-            onclick="loadAdmin()">
-
-            🔄 Actualiser
-
-        </button>
-
-    </div>
-
+</div>
 </header>
-
 
 <main>
 
-    <div class="hero">
+<div class="hero">
+<h1>Panneau <span>Admin</span></h1>
+<p>Gestion des livres, stocks, joueurs et commandes.</p>
+</div>
 
-        <h1>
-            Panneau <span>Admin</span>
-        </h1>
+<section class="panel">
 
-        <p>
-            Gestion des livres, stocks, joueurs et commandes.
-        </p>
+<h2>➕ Ajouter un livre</h2>
 
-    </div>
+<div class="adminGrid">
 
+<div>
 
-    <!-- AJOUT LIVRE -->
+<div class="formGroup">
+<label>Nom du livre</label>
+<input id="newBookTitle" maxlength="100"
+placeholder="Ex : Le Guide du Nether">
+</div>
 
-    <section class="panel">
+<div class="formGroup">
+<label>Description</label>
+<textarea id="newBookDescription" maxlength="300"
+placeholder="Description du livre..."></textarea>
+</div>
 
-        <h2>➕ Ajouter un livre</h2>
+<div class="formGroup">
+<label>Image (optionnel)</label>
+<input id="newBookImage" maxlength="500"
+placeholder="URL de l'image...">
+</div>
 
-        <div class="adminGrid">
+</div>
 
-            <div>
+<div>
 
-                <div class="formGroup">
+<div class="formGroup">
+<label>Prix en diamants</label>
+<input id="newBookPrice" type="number" min="0" value="10">
+</div>
 
-                    <label>Nom du livre</label>
+<div class="formGroup">
+<label>Stock</label>
+<input id="newBookStock" type="number" min="0" value="1">
+</div>
 
-                    <input
-                        id="newBookTitle"
-                        maxlength="100"
-                        placeholder="Ex : Le Guide du Nether"
-                    >
+<button class="btn btnPrimary" onclick="addBook()">
+Ajouter le livre
+</button>
 
-                </div>
+</div>
 
-                <div class="formGroup">
+</div>
+</section>
 
-                    <label>Description</label>
+<section class="panel">
+<h2>📚 Gestion des livres</h2>
+<div id="adminBooks">Chargement...</div>
+</section>
 
-                    <textarea
-                        id="newBookDescription"
-                        maxlength="300"
-                        placeholder="Description du livre..."
-                    ></textarea>
+<section class="panel">
+<h2>👥 Gestion des joueurs</h2>
+<div id="adminPlayers">Chargement...</div>
+</section>
 
-                </div>
+<section class="panel">
+<h2>🛒 Commandes en attente</h2>
+<div id="pendingOrders">Chargement...</div>
+</section>
 
-                <div class="formGroup">
-
-                    <label>Image (optionnel)</label>
-
-                    <input
-                        id="newBookImage"
-                        maxlength="500"
-                        placeholder="URL de l'image..."
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div>
-
-                <div class="formGroup">
-
-                    <label>Prix en diamants</label>
-
-                    <input
-                        id="newBookPrice"
-                        type="number"
-                        min="0"
-                        value="10"
-                    >
-
-                </div>
-
-                <div class="formGroup">
-
-                    <label>Stock</label>
-
-                    <input
-                        id="newBookStock"
-                        type="number"
-                        min="0"
-                        value="1"
-                    >
-
-                </div>
-
-                <button
-                    class="btn btnPrimary"
-                    onclick="addBook()">
-
-                    Ajouter le livre
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- LIVRES -->
-
-    <section class="panel">
-
-        <h2>📚 Gestion des livres</h2>
-
-        <div id="adminBooks">
-            Chargement...
-        </div>
-
-    </section>
-
-
-    <!-- JOUEURS -->
-
-    <section class="panel">
-
-        <h2>👥 Gestion des joueurs</h2>
-
-        <div id="adminPlayers">
-            Chargement...
-        </div>
-
-    </section>
-
-
-    <!-- COMMANDES -->
-
-    <section class="panel">
-
-        <h2>🛒 Commandes en attente</h2>
-
-        <div id="pendingOrders">
-            Chargement...
-        </div>
-
-    </section>
-
-
-    <!-- HISTORIQUE -->
-
-    <section class="panel">
-
-        <h2>📜 Historique des commandes</h2>
-
-        <div id="completedOrders">
-            Chargement...
-        </div>
-
-    </section>
+<section class="panel">
+<h2>📜 Historique des commandes</h2>
+<div id="completedOrders">Chargement...</div>
+</section>
 
 </main>
-
 </div>
 
+<div id="adminModal" class="modal hidden">
 
-<!-- =========================================================
-     ADMIN LOGIN MODAL
-========================================================= -->
+<div class="modalBox">
 
-<div
-    id="adminModal"
-    class="modal hidden">
+<h2>🔐 Administrateur</h2>
 
-    <div class="modalBox">
-
-        <h2>🔐 Administrateur</h2>
-
-        <div class="formGroup">
-
-            <label>Nom administrateur</label>
-
-            <input
-                id="adminUsername"
-                value="Hornet"
-            >
-
-        </div>
-
-        <div class="formGroup">
-
-            <label>Mot de passe</label>
-
-            <input
-                id="adminPassword"
-                type="password"
-                placeholder="Mot de passe"
-            >
-
-        </div>
-
-        <button
-            class="btn btnPrimary"
-            onclick="loginAdmin()">
-
-            Se connecter
-
-        </button>
-
-        <button
-            class="btn"
-            onclick="closeAdminModal()">
-
-            Annuler
-
-        </button>
-
-    </div>
-
+<div class="formGroup">
+<label>Nom administrateur</label>
+<input id="adminUsername" value="Hornet">
 </div>
 
+<div class="formGroup">
+<label>Mot de passe</label>
+<input id="adminPassword" type="password" placeholder="Mot de passe">
+</div>
+
+<button class="btn btnPrimary" onclick="loginAdmin()">
+Se connecter
+</button>
+
+<button class="btn" onclick="closeAdminModal()">
+Annuler
+</button>
+
+</div>
+</div>
 
 <div id="toastContainer"></div>
 
-
 <script>
 
-/* =========================================================
-   SUPABASE
-========================================================= */
-
 const SUPABASE_URL =
-    "https://sltjeabckshafocqmtco.supabase.co";
+"https://sltjeabckshafocqmtco.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_JcZRrsHq8opplahVtbjavw_DrA8ai0r";
+"sb_publishable_JcZRrsHq8opplahVtbjavw_DrA8ai0r";
 
 const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
-
-
-/* =========================================================
-   VARIABLES
-========================================================= */
-
-let currentUser = null;
-let currentProfile = null;
-
-let isAdmin = false;
-
-let adminUsername = null;
-let adminPassword = null;
-
-let books = [];
-let myOrders = [];
-
-
-/* =========================================================
-   UTILITAIRES
-========================================================= */
-
-function escapeHTML(value) {
-
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-
-function showToast(message, type = "") {
-
-    const container =
-        document.getElementById("toastContainer");
-
-    const toast =
-        document.createElement("div");
-
-    toast.className =
-        "toast " + type;
-
-    toast.textContent = message;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3500);
-}
-
-
-function formatDate(date) {
-
-    if (!date) {
-        return "";
-    }
-
-    return new Date(date).toLocaleString("fr-FR");
-}
-
-
-/* =========================================================
-   AUTHENTIFICATION ANONYME
-========================================================= */
-
-async function ensureAuth() {
-
-    const {
-        data: {
-            session
-        },
-        error: sessionError
-    } = await supabaseClient.auth.getSession();
-
-    if (sessionError) {
-        throw sessionError;
-    }
-
-    if (session) {
-
-        currentUser =
-            session.user;
-
-        return currentUser;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.auth.signInAnonymously();
-
-
-    if (error) {
-
-        console.error(error);
-
-        showToast(
-            "Impossible de créer la session Supabase. Vérifie que l'authentification anonyme est activée.",
-            "error"
-        );
-
-        throw error;
-    }
-
-
-    currentUser =
-        data.user;
-
-    return currentUser;
-}
-
-
-/* =========================================================
-   CHARGER MON JOUEUR
-========================================================= */
-
-async function loadMyPlayer() {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.rpc(
-            "get_my_player"
-        );
-
-
-    if (error) {
-        throw error;
-    }
-
-
-    /*
-     * get_my_player renvoie normalement
-     * une ligne.
-     */
-
-    if (Array.isArray(data)) {
-
-        currentProfile =
-            data[0] || null;
-
-    } else {
-
-        currentProfile =
-            data || null;
-
-    }
-
-
-    if (!currentProfile) {
-        return null;
-    }
-
-
-    updatePlayerUI();
-
-    return currentProfile;
-}
-
-
-/* =========================================================
-   UI JOUEUR
-========================================================= */
-
-function updatePlayerUI() {
-
-    if (!currentProfile) {
-        return;
-    }
-
-
-    document
-        .getElementById("currentUser")
-        .textContent =
-        currentProfile.username;
-
-
-    document
-        .getElementById("balance")
-        .textContent =
-        Number(
-            currentProfile.diamonds || 0
-        );
-
-
-    const adminButton =
-        document.getElementById(
-            "adminButton"
-        );
-
-
-    if (
-        currentProfile.username === "Hornet"
-    ) {
-
-        adminButton
-            .classList
-            .remove("hidden");
-
-    } else {
-
-        adminButton
-            .classList
-            .add("hidden");
-
-    }
-}
-
-
-/* =========================================================
-   CREATION DU COMPTE
-========================================================= */
-
-async function createAccount() {
-
-    const input =
-        document.getElementById(
-            "usernameInput"
-        );
-
-
-    const username =
-        input.value.trim();
-
-
-    if (!username) {
-
-        showToast(
-            "Entre un pseudo.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if (username.length < 2) {
-
-        showToast(
-            "Le pseudo doit contenir au moins 2 caractères.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if (
-        !/^[a-zA-Z0-9_À-ÿ -]+$/.test(username)
-    ) {
-
-        showToast(
-            "Pseudo invalide.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        await ensureAuth();
-
-
-        /*
-         * Fonction EXACTE du SQL :
-         *
-         * create_player(wanted_username)
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "create_player",
-                {
-                    wanted_username: username
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        /*
-         * On recharge ensuite le joueur
-         * depuis get_my_player().
-         */
-
-        await loadMyPlayer();
-
-
-        if (!currentProfile) {
-
-            showToast(
-                "Le compte n'a pas pu être chargé.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        localStorage.setItem(
-            "diamond_books_username",
-            currentProfile.username
-        );
-
-
-        await enterShop();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        let message =
-            error.message ||
-            "Impossible de créer le compte.";
-
-
-        if (
-            message
-                .toLowerCase()
-                .includes("hornet")
-        ) {
-
-            message =
-                "Le pseudo Hornet est réservé à l'administrateur.";
-
-        } else if (
-            message
-                .toLowerCase()
-                .includes("duplicate") ||
-            message
-                .toLowerCase()
-                .includes("unique")
-        ) {
-
-            message =
-                "Ce pseudo est déjà utilisé.";
-
-        }
-
-
-        showToast(
-            message,
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   INITIALISATION
-========================================================= */
-
-async function init() {
-
-    try {
-
-        await ensureAuth();
-
-
-        const player =
-            await loadMyPlayer();
-
-
-        if (player) {
-
-            localStorage.setItem(
-                "diamond_books_username",
-                player.username
-            );
-
-            await enterShop();
-
-        } else {
-
-            const saved =
-                localStorage.getItem(
-                    "diamond_books_username"
-                );
-
-
-            if (saved) {
-
-                document
-                    .getElementById(
-                        "usernameInput"
-                    )
-                    .value =
-                    saved;
-
-            }
-
-
-            showLogin();
-        }
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Erreur de connexion à Supabase.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   AFFICHAGE
-========================================================= */
-
-function showLogin() {
-
-    document
-        .getElementById("loginScreen")
-        .classList
-        .remove("hidden");
-
-
-    document
-        .getElementById("shopScreen")
-        .classList
-        .add("hidden");
-
-
-    document
-        .getElementById("adminScreen")
-        .classList
-        .add("hidden");
-}
-
-
-async function enterShop() {
-
-    document
-        .getElementById("loginScreen")
-        .classList
-        .add("hidden");
-
-
-    document
-        .getElementById("adminScreen")
-        .classList
-        .add("hidden");
-
-
-    document
-        .getElementById("shopScreen")
-        .classList
-        .remove("hidden");
-
-
-    updatePlayerUI();
-
-
-    await loadBooks();
-
-    await loadMyOrders();
-}
-
-
-/* =========================================================
-   LIVRES PUBLICS
-========================================================= */
-
-async function loadBooks() {
-
-    try {
-
-        /*
-         * Les livres sont directement lisibles
-         * grâce à la policy SELECT de ton SQL.
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("books")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        books =
-            data || [];
-
-
-        renderBooks();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document
-            .getElementById("booksGrid")
-            .innerHTML =
-            `
-                <p>
-                    Impossible de charger les livres.
-                </p>
-            `;
-    }
-}
-
-
-/* =========================================================
-   AFFICHER LES LIVRES
-========================================================= */
-
-function renderBooks() {
-
-    const grid =
-        document.getElementById(
-            "booksGrid"
-        );
-
-
-    if (!books.length) {
-
-        grid.innerHTML =
-            `
-                <p style="color:#9ba9c2">
-                    Aucun livre disponible pour le moment.
-                </p>
-            `;
-
-        return;
-    }
-
-
-    grid.innerHTML =
-        books.map(book => {
-
-            const price =
-                Number(
-                    book.price || 0
-                );
-
-
-            const stock =
-                Number(
-                    book.stock || 0
-                );
-
-
-            const playerDiscount =
-                Number(
-                    currentProfile?.discount || 0
-                );
-
-
-            const finalPrice =
-                Math.floor(
-                    price *
-                    (100 - playerDiscount) /
-                    100
-                );
-
-
-            let stockClass = "";
-
-
-            if (stock <= 0) {
-
-                stockClass =
-                    "empty";
-
-            } else if (stock <= 3) {
-
-                stockClass =
-                    "low";
-
-            }
-
-
-            const imageHTML =
-                book.image
-                ?
-                `
-                    <img
-                        src="${escapeHTML(book.image)}"
-                        alt=""
-                        style="
-                            width:64px;
-                            height:76px;
-                            object-fit:cover;
-                            border-radius:4px;
-                            display:block;
-                            margin:0 auto 17px;
-                        "
-                    >
-                `
-                :
-                `
-                    <div class="bookIcon"></div>
-                `;
-
-
-            return `
-                <article class="book">
-
-                    ${imageHTML}
-
-                    <h3>
-                        ${escapeHTML(book.title)}
-                    </h3>
-
-                    <div class="description">
-
-                        ${escapeHTML(
-                            book.description ||
-                            "Aucune description."
-                        )}
-
-                    </div>
-
-
-                    <div style="margin-top:14px">
-
-                        ${
-                            playerDiscount > 0
-                            ?
-                            `
-                                <span class="oldPrice">
-                                    ${price} 💎
-                                </span>
-                            `
-                            :
-                            ""
-                        }
-
-
-                        <span class="price">
-                            ${finalPrice} 💎
-                        </span>
-
-                    </div>
-
-
-                    ${
-                        playerDiscount > 0
-                        ?
-                        `
-                            <div class="discount">
-                                -${playerDiscount}%
-                            </div>
-                        `
-                        :
-                        ""
-                    }
-
-
-                    <div class="stock ${stockClass}">
-
-                        ${
-                            stock > 0
-                            ?
-                            `📦 ${stock} disponible(s)`
-                            :
-                            "❌ Rupture de stock"
-                        }
-
-                    </div>
-
-
-                    <div class="bookActions">
-
-                        <button
-                            class="btn btnPrimary"
-                            ${
-                                stock <= 0
-                                ? "disabled"
-                                : ""
-                            }
-                            onclick="orderBook('${book.id}')">
-
-                            Acheter
-
-                        </button>
-
-                    </div>
-
-                </article>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   COMMANDER
-========================================================= */
-
-async function orderBook(bookId) {
-
-    const book =
-        books.find(
-            b =>
-                String(b.id) ===
-                String(bookId)
-        );
-
-
-    if (!book) {
-
-        showToast(
-            "Livre introuvable.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const stock =
-        Number(book.stock || 0);
-
-
-    if (stock <= 0) {
-
-        showToast(
-            "Ce livre est en rupture de stock.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const quantityInput =
-        prompt(
-            `Combien d'exemplaires de "${book.title}" ?`,
-            "1"
-        );
-
-
-    if (quantityInput === null) {
-        return;
-    }
-
-
-    const quantity =
-        Number(quantityInput);
-
-
-    if (
-        !Number.isInteger(quantity) ||
-        quantity <= 0
-    ) {
-
-        showToast(
-            "Quantité invalide.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if (quantity > stock) {
-
-        showToast(
-            "Il n'y a pas assez de stock.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        /*
-         * Fonction EXACTE du SQL :
-         *
-         * create_order(items jsonb)
-         *
-         * Le JSON envoyé correspond aux lignes
-         * attendues par la fonction.
-         */
-
-        const items = [
-            {
-                book_id: Number(bookId),
-                quantity: quantity
-            }
-        ];
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "create_order",
-                {
-                    items: items
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Commande créée ! Elle est maintenant en attente de validation.",
-            "success"
-        );
-
-
-        await loadMyPlayer();
-
-        await loadBooks();
-
-        await loadMyOrders();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible de créer la commande.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   MES COMMANDES
-========================================================= */
-
-async function loadMyOrders() {
-
-    if (!currentProfile) {
-        return;
-    }
-
-
-    try {
-
-        /*
-         * RLS :
-         * orders permet à un joueur de voir
-         * ses propres commandes.
-         */
-
-        const {
-            data: orders,
-            error: ordersError
-        } =
-            await supabaseClient
-                .from("orders")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
-
-
-        if (ordersError) {
-            throw ordersError;
-        }
-
-
-        const orderIds =
-            (orders || []).map(
-                order => order.id
-            );
-
-
-        let items = [];
-
-
-        if (orderIds.length) {
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
-                    .from("order_items")
-                    .select("*")
-                    .in(
-                        "order_id",
-                        orderIds
-                    );
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            items =
-                data || [];
-        }
-
-
-        myOrders =
-            (orders || []).map(order => {
-
-                return {
-                    ...order,
-
-                    items:
-                        items.filter(
-                            item =>
-                                String(
-                                    item.order_id
-                                ) ===
-                                String(order.id)
-                        )
-                };
-
-            });
-
-
-        renderMyOrders();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document
-            .getElementById("myOrders")
-            .innerHTML =
-            `
-                <p>
-                    Impossible de charger les commandes.
-                </p>
-            `;
-    }
-}
-
-
-/* =========================================================
-   AFFICHER MES COMMANDES
-========================================================= */
-
-function renderMyOrders() {
-
-    const container =
-        document.getElementById(
-            "myOrders"
-        );
-
-
-    if (!myOrders.length) {
-
-        container.innerHTML =
-            `
-                <p style="color:#9ba9c2">
-                    Tu n'as encore aucune commande.
-                </p>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        myOrders.map(order => {
-
-            let statusText =
-                "⏳ En attente";
-
-
-            if (
-                order.status ===
-                "Terminée"
-            ) {
-
-                statusText =
-                    "✅ Terminée";
-
-            } else if (
-                order.status ===
-                "Annulée"
-            ) {
-
-                statusText =
-                    "❌ Annulée";
-            }
-
-
-            const itemsHTML =
-                (order.items || [])
-                    .map(item =>
-                        `
-                            <li>
-                                ${escapeHTML(item.title)}
-                                × ${item.quantity}
-                                — ${item.price} 💎
-                            </li>
-                        `
-                    )
-                    .join("");
-
-
-            return `
-                <div class="order">
-
-                    <div class="orderTitle">
-                        Commande #${order.id}
-                    </div>
-
-
-                    <div class="orderItems">
-
-                        ${
-                            itemsHTML ||
-                            "<li>Commande vide</li>"
-                        }
-
-                    </div>
-
-
-                    <div class="orderMeta">
-
-                        💎 Total :
-                        ${order.total}
-
-                        <br>
-
-                        📌 Statut :
-                        ${statusText}
-
-                        <br>
-
-                        🕒
-                        ${formatDate(
-                            order.created_at
-                        )}
-
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-function showOrders() {
-
-    const panel =
-        document.getElementById(
-            "myOrdersPanel"
-        );
-
-
-    panel.classList.toggle(
-        "hidden"
-    );
-
-
-    if (
-        !panel.classList.contains(
-            "hidden"
-        )
-    ) {
-
-        loadMyOrders();
-    }
-}
-
-
-/* =========================================================
-   ADMIN LOGIN
-========================================================= */
-
-function showAdminLogin() {
-
-    document
-        .getElementById("adminModal")
-        .classList
-        .remove("hidden");
-}
-
-
-function closeAdminModal() {
-
-    document
-        .getElementById("adminModal")
-        .classList
-        .add("hidden");
-}
-
-
-async function loginAdmin() {
-
-    const username =
-        document
-            .getElementById(
-                "adminUsername"
-            )
-            .value
-            .trim();
-
-
-    const password =
-        document
-            .getElementById(
-                "adminPassword"
-            )
-            .value;
-
-
-    if (!username || !password) {
-
-        showToast(
-            "Remplis les deux champs.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        /*
-         * Fonction EXACTE :
-         *
-         * admin_login(
-         *   admin_username,
-         *   admin_password
-         * )
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_login",
-                {
-                    admin_username:
-                        username,
-
-                    admin_password:
-                        password
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        if (!data) {
-
-            showToast(
-                "Identifiants incorrects.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        isAdmin = true;
-
-        adminUsername =
-            username;
-
-        adminPassword =
-            password;
-
-
-        closeAdminModal();
-
-        openAdmin();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Connexion administrateur impossible.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
-function openAdmin() {
-
-    if (!isAdmin) {
-
-        showAdminLogin();
-
-        return;
-    }
-
-
-    document
-        .getElementById("shopScreen")
-        .classList
-        .add("hidden");
-
-
-    document
-        .getElementById("adminScreen")
-        .classList
-        .remove("hidden");
-
-
-    loadAdmin();
-}
-
-
-function closeAdmin() {
-
-    document
-        .getElementById("adminScreen")
-        .classList
-        .add("hidden");
-
-
-    document
-        .getElementById("shopScreen")
-        .classList
-        .remove("hidden");
-
-
-    loadBooks();
-
-    loadMyPlayer();
-}
-
-
-async function loadAdmin() {
-
-    if (!isAdmin) {
-        return;
-    }
-
-
-    await Promise.all([
-        loadAdminBooks(),
-        loadAdminOrders(),
-        loadAdminPlayers()
-    ]);
-}
-
-
-/* =========================================================
-   ADMIN — AJOUT LIVRE
-========================================================= */
-
-async function addBook() {
-
-    const title =
-        document
-            .getElementById(
-                "newBookTitle"
-            )
-            .value
-            .trim();
-
-
-    const description =
-        document
-            .getElementById(
-                "newBookDescription"
-            )
-            .value
-            .trim();
-
-
-    const image =
-        document
-            .getElementById(
-                "newBookImage"
-            )
-            .value
-            .trim();
-
-
-    const price =
-        Number(
-            document
-                .getElementById(
-                    "newBookPrice"
-                )
-                .value
-        );
-
-
-    const stock =
-        Number(
-            document
-                .getElementById(
-                    "newBookStock"
-                )
-                .value
-        );
-
-
-    if (!title) {
-
-        showToast(
-            "Donne un nom au livre.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if (
-        !Number.isInteger(price) ||
-        price < 0
-    ) {
-
-        showToast(
-            "Prix invalide.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if (
-        !Number.isInteger(stock) ||
-        stock < 0
-    ) {
-
-        showToast(
-            "Stock invalide.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        /*
-         * Fonction EXACTE du SQL :
-         *
-         * admin_add_book(
-         *   admin_username,
-         *   admin_password,
-         *   book_title,
-         *   book_description,
-         *   book_price,
-         *   book_stock,
-         *   book_image
-         * )
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_add_book",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    book_title:
-                        title,
-
-                    book_description:
-                        description,
-
-                    book_price:
-                        price,
-
-                    book_stock:
-                        stock,
-
-                    book_image:
-                        image || null
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Livre ajouté !",
-            "success"
-        );
-
-
-        document
-            .getElementById(
-                "newBookTitle"
-            )
-            .value = "";
-
-
-        document
-            .getElementById(
-                "newBookDescription"
-            )
-            .value = "";
-
-
-        document
-            .getElementById(
-                "newBookImage"
-            )
-            .value = "";
-
-
-        await loadAdminBooks();
-
-        await loadBooks();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible d'ajouter le livre.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN — LISTE LIVRES
-========================================================= */
-
-async function loadAdminBooks() {
-
-    try {
-
-        /*
-         * Fonction EXACTE :
-         *
-         * admin_list_books(
-         *   admin_username,
-         *   admin_password
-         * )
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_list_books",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        renderAdminBooks(
-            data || []
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document
-            .getElementById(
-                "adminBooks"
-            )
-            .innerHTML =
-            `
-                <p>
-                    Impossible de charger les livres.
-                </p>
-            `;
-    }
-}
-
-
-/* =========================================================
-   ADMIN — AFFICHER LIVRES
-========================================================= */
-
-function renderAdminBooks(list) {
-
-    const container =
-        document.getElementById(
-            "adminBooks"
-        );
-
-
-    if (!list.length) {
-
-        container.innerHTML =
-            `
-                <p style="color:#9ba9c2">
-                    Aucun livre.
-                </p>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        list.map(book => {
-
-            return `
-                <div class="adminBook">
-
-                    <div>
-
-                        <strong>
-                            ${escapeHTML(
-                                book.title
-                            )}
-                        </strong>
-
-
-                        <div style="
-                            color:#9ba9c2;
-                            font-size:13px;
-                            margin-top:5px;
-                        ">
-
-                            ${book.price} 💎
-                            ·
-                            Stock :
-                            ${book.stock}
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="adminBookControls">
-
-                        <input
-                            id="price-${book.id}"
-                            type="number"
-                            min="0"
-                            value="${book.price}"
-                            title="Prix"
-                        >
-
-
-                        <input
-                            id="stock-${book.id}"
-                            type="number"
-                            min="0"
-                            value="${book.stock}"
-                            title="Stock"
-                        >
-
-
-                        <button
-                            class="btn btnSmall btnPrimary"
-                            onclick="updateBook('${book.id}')">
-
-                            Sauver
-
-                        </button>
-
-
-                        <button
-                            class="btn btnSmall btnRed"
-                            onclick="deleteBook('${book.id}')">
-
-                            Suppr.
-
-                        </button>
-
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   ADMIN — MODIFIER LIVRE
-========================================================= */
-
-async function updateBook(bookId) {
-
-    const price =
-        Number(
-            document
-                .getElementById(
-                    `price-${bookId}`
-                )
-                .value
-        );
-
-
-    const stock =
-        Number(
-            document
-                .getElementById(
-                    `stock-${bookId}`
-                )
-                .value
-        );
-
-
-    if (
-        !Number.isInteger(price) ||
-        price < 0 ||
-        !Number.isInteger(stock) ||
-        stock < 0
-    ) {
-
-        showToast(
-            "Valeurs invalides.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        /*
-         * Ton SQL possède DEUX fonctions séparées :
-         *
-         * admin_update_price()
-         * admin_update_stock()
-         *
-         * On les appelle donc séparément.
-         */
-
-
-        const {
-            error: priceError
-        } =
-            await supabaseClient.rpc(
-                "admin_update_price",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    book_id:
-                        Number(bookId),
-
-                    new_price:
-                        price
-                }
-            );
-
-
-        if (priceError) {
-            throw priceError;
-        }
-
-
-        const {
-            error: stockError
-        } =
-            await supabaseClient.rpc(
-                "admin_update_stock",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    book_id:
-                        Number(bookId),
-
-                    new_stock:
-                        stock
-                }
-            );
-
-
-        if (stockError) {
-            throw stockError;
-        }
-
-
-        showToast(
-            "Livre mis à jour.",
-            "success"
-        );
-
-
-        await loadAdminBooks();
-
-        await loadBooks();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible de modifier le livre.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN — SUPPRIMER LIVRE
-========================================================= */
-
-async function deleteBook(bookId) {
-
-    if (
-        !confirm(
-            "Supprimer ce livre ?"
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_delete_book",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    book_id:
-                        Number(bookId)
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Livre supprimé.",
-            "success"
-        );
-
-
-        await loadAdminBooks();
-
-        await loadBooks();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible de supprimer le livre.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN — JOUEURS
-========================================================= */
-
-async function loadAdminPlayers() {
-
-    try {
-
-        /*
-         * Fonction ajoutée dans ton SQL :
-         *
-         * admin_list_players(
-         *   admin_username,
-         *   admin_password
-         * )
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_list_players",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        renderAdminPlayers(
-            data || []
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document
-            .getElementById(
-                "adminPlayers"
-            )
-            .innerHTML =
-            `
-                <p>
-                    Impossible de charger les joueurs.
-                </p>
-            `;
-    }
-}
-
-
-/* =========================================================
-   ADMIN — AFFICHER JOUEURS
-========================================================= */
-
-function renderAdminPlayers(list) {
-
-    const container =
-        document.getElementById(
-            "adminPlayers"
-        );
-
-
-    if (!list.length) {
-
-        container.innerHTML =
-            `
-                <p style="color:#9ba9c2">
-                    Aucun joueur.
-                </p>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        list.map(player => {
-
-            return `
-                <div class="player">
-
-                    <strong>
-                        ${escapeHTML(
-                            player.username
-                        )}
-                    </strong>
-
-
-                    <div class="orderMeta">
-
-                        💎
-                        ${player.diamonds}
-
-                        ·
-
-                        Réduction :
-                        ${player.discount}%
-
-                    </div>
-
-
-                    <div class="playerControls">
-
-                        <input
-                            id="diamonds-${player.id}"
-                            type="number"
-                            min="0"
-                            value="${player.diamonds}"
-                            title="Diamants"
-                        >
-
-
-                        <button
-                            class="btn btnSmall btnPrimary"
-                            onclick="updatePlayerDiamonds('${player.id}')">
-
-                            💎 Modifier
-
-                        </button>
-
-
-                        <input
-                            id="discount-${player.id}"
-                            type="number"
-                            min="0"
-                            max="100"
-                            value="${player.discount}"
-                            title="Réduction"
-                        >
-
-
-                        <button
-                            class="btn btnSmall btnYellow"
-                            onclick="updatePlayerDiscount('${player.id}')">
-
-                            🏷️ Réduction
-
-                        </button>
-
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   ADMIN — DIAMANTS
-========================================================= */
-
-async function updatePlayerDiamonds(playerId) {
-
-    const input =
-        document.getElementById(
-            `diamonds-${playerId}`
-        );
-
-
-    const diamonds =
-        Number(input.value);
-
-
-    if (
-        !Number.isInteger(diamonds) ||
-        diamonds < 0
-    ) {
-
-        showToast(
-            "Nombre de diamants invalide.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_update_diamonds",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    player_id:
-                        playerId,
-
-                    new_diamonds:
-                        diamonds
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Diamants modifiés.",
-            "success"
-        );
-
-
-        await loadAdminPlayers();
-
-        await loadMyPlayer();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible de modifier les diamants.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN — RÉDUCTION
-========================================================= */
-
-async function updatePlayerDiscount(playerId) {
-
-    const input =
-        document.getElementById(
-            `discount-${playerId}`
-        );
-
-
-    const discount =
-        Number(input.value);
-
-
-    if (
-        !Number.isInteger(discount) ||
-        discount < 0 ||
-        discount > 100
-    ) {
-
-        showToast(
-            "Réduction invalide.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_update_discount",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    player_id:
-                        playerId,
-
-                    new_discount:
-                        discount
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Réduction modifiée.",
-            "success"
-        );
-
-
-        await loadAdminPlayers();
-
-        await loadMyPlayer();
-
-        await loadBooks();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible de modifier la réduction.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN — COMMANDES
-========================================================= */
-
-async function loadAdminOrders() {
-
-    try {
-
-        /*
-         * Fonction EXACTE :
-         *
-         * admin_list_orders(
-         *   admin_username,
-         *   admin_password
-         * )
-         */
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_list_orders",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        const orders =
-            data || [];
-
-
-        const pending =
-            orders.filter(
-                order =>
-                    order.status ===
-                    "En attente"
-            );
-
-
-        const history =
-            orders.filter(
-                order =>
-                    order.status ===
-                    "Terminée" ||
-                    order.status ===
-                    "Annulée"
-            );
-
-
-        renderPendingOrders(
-            pending
-        );
-
-
-        renderCompletedOrders(
-            history
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        document
-            .getElementById(
-                "pendingOrders"
-            )
-            .innerHTML =
-            "<p>Erreur de chargement.</p>";
-
-
-        document
-            .getElementById(
-                "completedOrders"
-            )
-            .innerHTML =
-            "<p>Erreur de chargement.</p>";
-    }
-}
-
-
-/* =========================================================
-   ADMIN — COMMANDES EN ATTENTE
-========================================================= */
-
-function renderPendingOrders(
-    orders
-) {
-
-    const container =
-        document.getElementById(
-            "pendingOrders"
-        );
-
-
-    if (!orders.length) {
-
-        container.innerHTML =
-            `
-                <p style="color:#9ba9c2">
-                    Aucune commande en attente.
-                </p>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        orders.map(order => {
-
-            const items =
-                Array.isArray(order.items)
-                ? order.items
-                : [];
-
-
-            const itemsHTML =
-                items.map(item =>
-                    `
-                        <li>
-                            ${escapeHTML(item.title)}
-                            × ${item.quantity}
-                            — ${item.price} 💎
-                        </li>
-                    `
-                ).join("");
-
-
-            return `
-                <div class="order">
-
-                    <div class="orderTitle">
-
-                        🛒
-                        Commande #${order.id}
-
-                    </div>
-
-
-                    <div class="orderMeta">
-
-                        👤
-                        ${escapeHTML(
-                            order.username
-                        )}
-
-                        <br>
-
-                        💎 Total :
-                        ${order.total}
-
-                        <br>
-
-                        🕒
-                        ${formatDate(
-                            order.created_at
-                        )}
-
-                    </div>
-
-
-                    <ul class="orderItems">
-
-                        ${
-                            itemsHTML ||
-                            "<li>Aucun article</li>"
-                        }
-
-                    </ul>
-
-
-                    <button
-                        class="btn btnGreen"
-                        onclick="validateOrder('${order.id}')">
-
-                        ✅ Valider la commande
-
-                    </button>
-
-
-                    <button
-                        class="btn btnRed"
-                        onclick="cancelOrder('${order.id}')">
-
-                        ❌ Annuler
-
-                    </button>
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   ADMIN — HISTORIQUE
-========================================================= */
-
-function renderCompletedOrders(
-    orders
-) {
-
-    const container =
-        document.getElementById(
-            "completedOrders"
-        );
-
-
-    if (!orders.length) {
-
-        container.innerHTML =
-            `
-                <p style="color:#9ba9c2">
-                    Aucun historique.
-                </p>
-            `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        orders.map(order => {
-
-            let statusText =
-                "❓";
-
-
-            if (
-                order.status ===
-                "Terminée"
-            ) {
-
-                statusText =
-                    "✅ Terminée";
-
-            } else if (
-                order.status ===
-                "Annulée"
-            ) {
-
-                statusText =
-                    "❌ Annulée";
-            }
-
-
-            const items =
-                Array.isArray(order.items)
-                ? order.items
-                : [];
-
-
-            const itemsHTML =
-                items.map(item =>
-                    `
-                        <li>
-                            ${escapeHTML(item.title)}
-                            × ${item.quantity}
-                            — ${item.price} 💎
-                        </li>
-                    `
-                ).join("");
-
-
-            return `
-                <div class="order">
-
-                    <div class="orderTitle">
-
-                        ${statusText}
-
-                        —
-                        Commande #${order.id}
-
-                    </div>
-
-
-                    <div class="orderMeta">
-
-                        👤
-                        ${escapeHTML(
-                            order.username
-                        )}
-
-                        <br>
-
-                        💎 Total :
-                        ${order.total}
-
-                        <br>
-
-                        🕒
-                        ${formatDate(
-                            order.created_at
-                        )}
-
-                    </div>
-
-
-                    <ul class="orderItems">
-
-                        ${
-                            itemsHTML ||
-                            "<li>Aucun article</li>"
-                        }
-
-                    </ul>
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-/* =========================================================
-   ADMIN — VALIDATION
-========================================================= */
-
-async function validateOrder(
-    orderId
-) {
-
-    if (
-        !confirm(
-            "Valider cette commande ?\n\nLe stock sera diminué."
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        /*
-         * Fonction EXACTE :
-         *
-         * admin_validate_order(
-         *   admin_username,
-         *   admin_password,
-         *   order_id
-         * )
-         */
-
-        const {
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_validate_order",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    order_id:
-                        Number(orderId)
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Commande validée et stock mis à jour.",
-            "success"
-        );
-
-
-        await loadAdmin();
-
-        await loadBooks();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible de valider la commande.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   ADMIN — ANNULATION
-========================================================= */
-
-async function cancelOrder(
-    orderId
-) {
-
-    if (
-        !confirm(
-            "Annuler cette commande ?\n\nLes diamants seront remboursés."
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        /*
-         * Fonction EXACTE :
-         *
-         * admin_cancel_order(
-         *   admin_username,
-         *   admin_password,
-         *   order_id
-         * )
-         */
-
-        const {
-            error
-        } =
-            await supabaseClient.rpc(
-                "admin_cancel_order",
-                {
-                    admin_username:
-                        adminUsername,
-
-                    admin_password:
-                        adminPassword,
-
-                    order_id:
-                        Number(orderId)
-                }
-            );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        showToast(
-            "Commande annulée et diamants remboursés.",
-            "success"
-        );
-
-
-        await loadAdmin();
-
-        await loadBooks();
-
-        await loadMyPlayer();
-
-        await loadMyOrders();
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Impossible d'annuler la commande.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-
-    currentUser = null;
-    currentProfile = null;
-
-    isAdmin = false;
-
-    adminUsername = null;
-    adminPassword = null;
-
-
-    showLogin();
-}
-
-
-/* =========================================================
-   REALTIME
-========================================================= */
-
-/*
- * Ton SQL actuel possède déjà books dans
- * la publication supabase_realtime.
- *
- * On écoute donc directement books.
- *
- * PAS de shop_events ici car cette table
- * n'existe pas dans ton SQL.
- */
-
-supabaseClient
-    .channel(
-        "diamond-books-books"
-    )
-    .on(
-        "postgres_changes",
-        {
-            event: "*",
-            schema: "public",
-            table: "books"
-        },
-        async () => {
-
-            console.log(
-                "🔄 Livres mis à jour"
-            );
-
-
-            await loadBooks();
-
-
-            if (isAdmin) {
-                await loadAdminBooks();
-            }
-
-        }
-    )
-    .subscribe();
-
-
-/*
- * Les commandes ne sont pas écoutées directement
- * ici car ton RLS protège orders/order_items
- * et l'admin passe par les fonctions SECURITY DEFINER.
- *
- * On fait donc une actualisation automatique de
- * l'interface admin toutes les 5 secondes.
- */
-
-setInterval(
-    async () => {
-
-        if (
-            isAdmin &&
-            !document
-                .getElementById(
-                    "adminScreen"
-                )
-                .classList
-                .contains("hidden")
-        ) {
-
-            await loadAdminOrders();
-
-        }
-
-    },
-    5000
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
 );
 
 
-/* =========================================================
-   ENTER
-========================================================= */
+let currentUser=null;
+let currentProfile=null;
+let isAdmin=false;
+let adminUsername=null;
+let adminPassword=null;
+let books=[];
+let myOrders=[];
+
+
+function escapeHTML(value){
+if(value===null||value===undefined)return "";
+return String(value)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+}
+
+
+function showToast(message,type=""){
+const container=document.getElementById("toastContainer");
+const toast=document.createElement("div");
+toast.className="toast "+type;
+toast.textContent=message;
+container.appendChild(toast);
+setTimeout(()=>toast.remove(),3500);
+}
+
+
+function formatDate(date){
+if(!date)return "";
+return new Date(date).toLocaleString("fr-FR");
+}
+
+
+/* ================= AUTH ================= */
+
+async function ensureAuth(){
+
+const {
+data:{session},
+error:sessionError
+}=await supabaseClient.auth.getSession();
+
+if(sessionError)throw sessionError;
+
+if(session){
+currentUser=session.user;
+return currentUser;
+}
+
+const {data,error}=
+await supabaseClient.auth.signInAnonymously();
+
+if(error){
+console.error(error);
+showToast(
+"Impossible de créer la session Supabase. Vérifie que l'authentification anonyme est activée.",
+"error"
+);
+throw error;
+}
+
+currentUser=data.user;
+return currentUser;
+}
+
+
+/* ================= PLAYER ================= */
+
+async function loadMyPlayer(){
+
+const {data,error}=
+await supabaseClient.rpc("get_my_player");
+
+if(error)throw error;
+
+if(Array.isArray(data)){
+currentProfile=data[0]||null;
+}else{
+currentProfile=data||null;
+}
+
+if(!currentProfile)return null;
+
+updatePlayerUI();
+return currentProfile;
+}
+
+
+function updatePlayerUI(){
+
+if(!currentProfile)return;
+
+document.getElementById("currentUser").textContent=
+currentProfile.username;
+
+document.getElementById("balance").textContent=
+Number(currentProfile.diamonds||0);
+
+const adminButton=document.getElementById("adminButton");
+
+if(currentProfile.username==="Hornet"){
+adminButton.classList.remove("hidden");
+}else{
+adminButton.classList.add("hidden");
+}
+}
+
+
+/* ================= ACCOUNT ================= */
+
+async function createAccount(){
+
+const input=document.getElementById("usernameInput");
+const username=input.value.trim();
+
+if(!username){
+showToast("Entre un pseudo.","error");
+return;
+}
+
+if(username.length<2){
+showToast("Le pseudo doit contenir au moins 2 caractères.","error");
+return;
+}
+
+if(!/^[a-zA-Z0-9_À-ÿ -]+$/.test(username)){
+showToast("Pseudo invalide.","error");
+return;
+}
+
+try{
+
+await ensureAuth();
+
+const {error}=await supabaseClient.rpc(
+"create_player",
+{wanted_username:username}
+);
+
+if(error)throw error;
+
+await loadMyPlayer();
+
+if(!currentProfile){
+showToast("Le compte n'a pas pu être chargé.","error");
+return;
+}
+
+localStorage.setItem(
+"diamond_books_username",
+currentProfile.username
+);
+
+await enterShop();
+
+}catch(error){
+
+console.error(error);
+
+let message=error.message||"Impossible de créer le compte.";
+
+if(message.toLowerCase().includes("hornet")){
+message="Le pseudo Hornet est réservé à l'administrateur.";
+}else if(
+message.toLowerCase().includes("duplicate")||
+message.toLowerCase().includes("unique")
+){
+message="Ce pseudo est déjà utilisé.";
+}
+
+showToast(message,"error");
+}
+}
+
+
+/* ================= INIT ================= */
+
+async function init(){
+
+try{
+
+await ensureAuth();
+
+const player=await loadMyPlayer();
+
+if(player){
+
+localStorage.setItem(
+"diamond_books_username",
+player.username
+);
+
+await enterShop();
+
+}else{
+
+const saved=localStorage.getItem(
+"diamond_books_username"
+);
+
+if(saved){
+document.getElementById("usernameInput").value=saved;
+}
+
+showLogin();
+}
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Erreur de connexion à Supabase.",
+"error"
+);
+}
+}
+
+
+/* ================= DISPLAY ================= */
+
+function showLogin(){
+
+document.getElementById("loginScreen").classList.remove("hidden");
+document.getElementById("shopScreen").classList.add("hidden");
+document.getElementById("adminScreen").classList.add("hidden");
+}
+
+
+async function enterShop(){
+
+document.getElementById("loginScreen").classList.add("hidden");
+document.getElementById("adminScreen").classList.add("hidden");
+document.getElementById("shopScreen").classList.remove("hidden");
+
+updatePlayerUI();
+
+await loadBooks();
+await loadMyOrders();
+}
+
+
+/* ================= BOOKS ================= */
+
+async function loadBooks(){
+
+try{
+
+const {data,error}=
+await supabaseClient
+.from("books")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(error)throw error;
+
+books=data||[];
+
+renderBooks();
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById("booksGrid").innerHTML=
+"<p>Impossible de charger les livres.</p>";
+}
+}
+
+
+function renderBooks(){
+
+const grid=document.getElementById("booksGrid");
+
+if(!books.length){
+
+grid.innerHTML=
+'<p style="color:#9ba9c2">Aucun livre disponible pour le moment.</p>';
+
+return;
+}
+
+grid.innerHTML=books.map(book=>{
+
+const price=Number(book.price||0);
+const stock=Number(book.stock||0);
+const playerDiscount=Number(currentProfile?.discount||0);
+
+const finalPrice=Math.floor(
+price*(100-playerDiscount)/100
+);
+
+let stockClass="";
+
+if(stock<=0)stockClass="empty";
+else if(stock<=3)stockClass="low";
+
+const imageHTML=book.image
+?`
+<img
+src="${escapeHTML(book.image)}"
+alt=""
+style="
+width:64px;
+height:76px;
+object-fit:cover;
+border-radius:4px;
+display:block;
+margin:0 auto 17px;
+">
+`
+:`<div class="bookIcon"></div>`;
+
+return `
+<article class="book">
+
+${imageHTML}
+
+<h3>${escapeHTML(book.title)}</h3>
+
+<div class="description">
+${escapeHTML(book.description||"Aucune description.")}
+</div>
+
+<div style="margin-top:14px">
+
+${
+playerDiscount>0
+?`<span class="oldPrice">${price} 💎</span>`
+:""
+}
+
+<span class="price">${finalPrice} 💎</span>
+
+</div>
+
+${
+playerDiscount>0
+?`<div class="discount">-${playerDiscount}%</div>`
+:""
+}
+
+<div class="stock ${stockClass}">
+${stock>0?`📦 ${stock} disponible(s)`:"❌ Rupture de stock"}
+</div>
+
+<div class="bookActions">
+
+<button
+class="btn btnPrimary"
+${stock<=0?"disabled":""}
+onclick="orderBook('${book.id}')">
+Acheter
+</button>
+
+</div>
+
+</article>
+`;
+
+}).join("");
+}
+
+
+/* ================= ORDER ================= */
+
+async function orderBook(bookId){
+
+const book=books.find(
+b=>String(b.id)===String(bookId)
+);
+
+if(!book){
+showToast("Livre introuvable.","error");
+return;
+}
+
+const stock=Number(book.stock||0);
+
+if(stock<=0){
+showToast("Ce livre est en rupture de stock.","error");
+return;
+}
+
+const quantityInput=prompt(
+`Combien d'exemplaires de "${book.title}" ?`,
+"1"
+);
+
+if(quantityInput===null)return;
+
+const quantity=Number(quantityInput);
+
+if(!Number.isInteger(quantity)||quantity<=0){
+showToast("Quantité invalide.","error");
+return;
+}
+
+if(quantity>stock){
+showToast("Il n'y a pas assez de stock.","error");
+return;
+}
+
+try{
+
+const items=[
+{
+book_id:Number(bookId),
+quantity:quantity
+}
+];
+
+const {error}=await supabaseClient.rpc(
+"create_order",
+{items:items}
+);
+
+if(error)throw error;
+
+showToast(
+"Commande créée ! Elle est maintenant en attente de validation.",
+"success"
+);
+
+await loadMyPlayer();
+await loadBooks();
+await loadMyOrders();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible de créer la commande.",
+"error"
+);
+}
+}
+
+
+/* ================= MY ORDERS ================= */
+
+async function loadMyOrders(){
+
+if(!currentProfile)return;
+
+try{
+
+const {data:orders,error:ordersError}=
+await supabaseClient
+.from("orders")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(ordersError)throw ordersError;
+
+const orderIds=(orders||[]).map(order=>order.id);
+
+let items=[];
+
+if(orderIds.length){
+
+const {data,error}=
+await supabaseClient
+.from("order_items")
+.select("*")
+.in("order_id",orderIds);
+
+if(error)throw error;
+
+items=data||[];
+}
+
+myOrders=(orders||[]).map(order=>({
+...order,
+items:items.filter(
+item=>String(item.order_id)===String(order.id)
+)
+}));
+
+renderMyOrders();
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById("myOrders").innerHTML=
+"<p>Impossible de charger les commandes.</p>";
+}
+}
+
+
+function renderMyOrders(){
+
+const container=document.getElementById("myOrders");
+
+if(!myOrders.length){
+
+container.innerHTML=
+'<p style="color:#9ba9c2">Tu n\'as encore aucune commande.</p>';
+
+return;
+}
+
+container.innerHTML=myOrders.map(order=>{
+
+let statusText="⏳ En attente";
+
+if(order.status==="Terminée")statusText="✅ Terminée";
+else if(order.status==="Annulée")statusText="❌ Annulée";
+
+const itemsHTML=(order.items||[]).map(item=>`
+<li>
+${escapeHTML(item.title)}
+× ${item.quantity}
+— ${item.price} 💎
+</li>
+`).join("");
+
+return `
+<div class="order">
+
+<div class="orderTitle">
+Commande #${order.id}
+</div>
+
+<div class="orderItems">
+${itemsHTML||"<li>Commande vide</li>"}
+</div>
+
+<div class="orderMeta">
+
+💎 Total : ${order.total}
+
+<br>
+
+📌 Statut : ${statusText}
+
+<br>
+
+🕒 ${formatDate(order.created_at)}
+
+</div>
+
+</div>
+`;
+
+}).join("");
+}
+
+
+function showOrders(){
+
+const panel=document.getElementById("myOrdersPanel");
+
+panel.classList.toggle("hidden");
+
+if(!panel.classList.contains("hidden")){
+loadMyOrders();
+}
+}
+
+
+/* ================= ADMIN LOGIN ================= */
+
+function showAdminLogin(){
+
+document.getElementById("adminModal")
+.classList.remove("hidden");
+
+setTimeout(()=>{
+document.getElementById("adminPassword").focus();
+},50);
+}
+
+
+function closeAdminModal(){
+
+document.getElementById("adminModal")
+.classList.add("hidden");
+}
+
+
+async function loginAdmin(){
+
+const username=
+document.getElementById("adminUsername")
+.value.trim();
+
+const password=
+document.getElementById("adminPassword")
+.value;
+
+if(!username||!password){
+
+showToast(
+"Remplis les deux champs.",
+"error"
+);
+
+return;
+}
+
+try{
+
+const {data,error}=
+await supabaseClient.rpc(
+"admin_login",
+{
+admin_username:username,
+admin_password:password
+}
+);
+
+if(error)throw error;
+
+/*
+ * La fonction SQL retourne BOOLEAN.
+ * On vérifie explicitement true.
+ */
+
+if(data!==true){
+
+showToast(
+"Identifiants incorrects.",
+"error"
+);
+
+return;
+}
+
+/*
+ * Connexion admin réussie.
+ */
+
+isAdmin=true;
+adminUsername=username;
+adminPassword=password;
+
+closeAdminModal();
+
+/*
+ * IMPORTANT :
+ * openAdmin() cache maintenant AUSSI
+ * loginScreen.
+ */
+
+openAdmin();
+
+showToast(
+"Connexion administrateur réussie.",
+"success"
+);
+
+}catch(error){
+
+console.error("Erreur admin :",error);
+
+showToast(
+error.message||
+"Connexion administrateur impossible.",
+"error"
+);
+}
+}
+
+
+/* ================= OPEN ADMIN ================= */
+
+/*
+ * CORRECTION PRINCIPALE :
+ * l'ancien code cachait seulement shopScreen.
+ * loginScreen restait donc affiché.
+ */
+
+function openAdmin(){
+
+if(!isAdmin){
+
+showAdminLogin();
+return;
+}
+
+/* Cacher complètement l'écran de connexion */
+document.getElementById("loginScreen")
+.classList.add("hidden");
+
+/* Cacher la boutique */
+document.getElementById("shopScreen")
+.classList.add("hidden");
+
+/* Afficher l'administration */
+document.getElementById("adminScreen")
+.classList.remove("hidden");
+
+/* Charger les données admin */
+loadAdmin();
+}
+
+
+function closeAdmin(){
+
+document.getElementById("adminScreen")
+.classList.add("hidden");
+
+document.getElementById("loginScreen")
+.classList.add("hidden");
+
+document.getElementById("shopScreen")
+.classList.remove("hidden");
+
+loadBooks();
+loadMyPlayer();
+}
+
+
+/* ================= ADMIN LOAD ================= */
+
+async function loadAdmin(){
+
+if(!isAdmin)return;
+
+await Promise.all([
+loadAdminBooks(),
+loadAdminOrders(),
+loadAdminPlayers()
+]);
+}
+
+
+/* ================= ADD BOOK ================= */
+
+async function addBook(){
+
+const title=
+document.getElementById("newBookTitle").value.trim();
+
+const description=
+document.getElementById("newBookDescription").value.trim();
+
+const image=
+document.getElementById("newBookImage").value.trim();
+
+const price=Number(
+document.getElementById("newBookPrice").value
+);
+
+const stock=Number(
+document.getElementById("newBookStock").value
+);
+
+if(!title){
+showToast("Donne un nom au livre.","error");
+return;
+}
+
+if(!Number.isInteger(price)||price<0){
+showToast("Prix invalide.","error");
+return;
+}
+
+if(!Number.isInteger(stock)||stock<0){
+showToast("Stock invalide.","error");
+return;
+}
+
+try{
+
+const {error}=await supabaseClient.rpc(
+"admin_add_book",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+book_title:title,
+book_description:description,
+book_price:price,
+book_stock:stock,
+book_image:image||null
+}
+);
+
+if(error)throw error;
+
+showToast("Livre ajouté !","success");
+
+document.getElementById("newBookTitle").value="";
+document.getElementById("newBookDescription").value="";
+document.getElementById("newBookImage").value="";
+
+await loadAdminBooks();
+await loadBooks();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible d'ajouter le livre.",
+"error"
+);
+}
+}
+
+
+/* ================= ADMIN BOOKS ================= */
+
+async function loadAdminBooks(){
+
+try{
+
+const {data,error}=
+await supabaseClient.rpc(
+"admin_list_books",
+{
+admin_username:adminUsername,
+admin_password:adminPassword
+}
+);
+
+if(error)throw error;
+
+renderAdminBooks(data||[]);
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById("adminBooks").innerHTML=
+"<p>Impossible de charger les livres.</p>";
+}
+}
+
+
+function renderAdminBooks(list){
+
+const container=document.getElementById("adminBooks");
+
+if(!list.length){
+
+container.innerHTML=
+'<p style="color:#9ba9c2">Aucun livre.</p>';
+
+return;
+}
+
+container.innerHTML=list.map(book=>`
+
+<div class="adminBook">
+
+<div>
+
+<strong>${escapeHTML(book.title)}</strong>
+
+<div style="
+color:#9ba9c2;
+font-size:13px;
+margin-top:5px;
+">
+
+${book.price} 💎 · Stock : ${book.stock}
+
+</div>
+
+</div>
+
+<div class="adminBookControls">
+
+<input
+id="price-${book.id}"
+type="number"
+min="0"
+value="${book.price}"
+title="Prix"
+>
+
+<input
+id="stock-${book.id}"
+type="number"
+min="0"
+value="${book.stock}"
+title="Stock"
+>
+
+<button
+class="btn btnSmall btnPrimary"
+onclick="updateBook('${book.id}')">
+Sauver
+</button>
+
+<button
+class="btn btnSmall btnRed"
+onclick="deleteBook('${book.id}')">
+Suppr.
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+}
+
+
+/* ================= UPDATE BOOK ================= */
+
+async function updateBook(bookId){
+
+const price=Number(
+document.getElementById(`price-${bookId}`).value
+);
+
+const stock=Number(
+document.getElementById(`stock-${bookId}`).value
+);
+
+if(
+!Number.isInteger(price)||
+price<0||
+!Number.isInteger(stock)||
+stock<0
+){
+
+showToast("Valeurs invalides.","error");
+return;
+}
+
+try{
+
+const {error:priceError}=
+await supabaseClient.rpc(
+"admin_update_price",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+book_id:Number(bookId),
+new_price:price
+}
+);
+
+if(priceError)throw priceError;
+
+const {error:stockError}=
+await supabaseClient.rpc(
+"admin_update_stock",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+book_id:Number(bookId),
+new_stock:stock
+}
+);
+
+if(stockError)throw stockError;
+
+showToast("Livre mis à jour.","success");
+
+await loadAdminBooks();
+await loadBooks();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible de modifier le livre.",
+"error"
+);
+}
+}
+
+
+/* ================= DELETE BOOK ================= */
+
+async function deleteBook(bookId){
+
+if(!confirm("Supprimer ce livre ?"))return;
+
+try{
+
+const {error}=
+await supabaseClient.rpc(
+"admin_delete_book",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+book_id:Number(bookId)
+}
+);
+
+if(error)throw error;
+
+showToast("Livre supprimé.","success");
+
+await loadAdminBooks();
+await loadBooks();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible de supprimer le livre.",
+"error"
+);
+}
+}
+
+
+/* ================= ADMIN PLAYERS ================= */
+
+async function loadAdminPlayers(){
+
+try{
+
+const {data,error}=
+await supabaseClient.rpc(
+"admin_list_players",
+{
+admin_username:adminUsername,
+admin_password:adminPassword
+}
+);
+
+if(error)throw error;
+
+renderAdminPlayers(data||[]);
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById("adminPlayers").innerHTML=
+"<p>Impossible de charger les joueurs.</p>";
+}
+}
+
+
+function renderAdminPlayers(list){
+
+const container=document.getElementById("adminPlayers");
+
+if(!list.length){
+
+container.innerHTML=
+'<p style="color:#9ba9c2">Aucun joueur.</p>';
+
+return;
+}
+
+container.innerHTML=list.map(player=>`
+
+<div class="player">
+
+<strong>${escapeHTML(player.username)}</strong>
+
+<div class="orderMeta">
+
+💎 ${player.diamonds}
+·
+Réduction : ${player.discount}%
+
+</div>
+
+<div class="playerControls">
+
+<input
+id="diamonds-${player.id}"
+type="number"
+min="0"
+value="${player.diamonds}"
+title="Diamants"
+>
+
+<button
+class="btn btnSmall btnPrimary"
+onclick="updatePlayerDiamonds('${player.id}')">
+💎 Modifier
+</button>
+
+<input
+id="discount-${player.id}"
+type="number"
+min="0"
+max="100"
+value="${player.discount}"
+title="Réduction"
+>
+
+<button
+class="btn btnSmall btnYellow"
+onclick="updatePlayerDiscount('${player.id}')">
+🏷️ Réduction
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+}
+
+
+/* ================= DIAMONDS ================= */
+
+async function updatePlayerDiamonds(playerId){
+
+const diamonds=Number(
+document.getElementById(`diamonds-${playerId}`).value
+);
+
+if(!Number.isInteger(diamonds)||diamonds<0){
+
+showToast(
+"Nombre de diamants invalide.",
+"error"
+);
+
+return;
+}
+
+try{
+
+const {error}=
+await supabaseClient.rpc(
+"admin_update_diamonds",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+player_id:playerId,
+new_diamonds:diamonds
+}
+);
+
+if(error)throw error;
+
+showToast("Diamants modifiés.","success");
+
+await loadAdminPlayers();
+await loadMyPlayer();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible de modifier les diamants.",
+"error"
+);
+}
+}
+
+
+/* ================= DISCOUNT ================= */
+
+async function updatePlayerDiscount(playerId){
+
+const discount=Number(
+document.getElementById(`discount-${playerId}`).value
+);
+
+if(
+!Number.isInteger(discount)||
+discount<0||
+discount>100
+){
+
+showToast("Réduction invalide.","error");
+return;
+}
+
+try{
+
+const {error}=
+await supabaseClient.rpc(
+"admin_update_discount",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+player_id:playerId,
+new_discount:discount
+}
+);
+
+if(error)throw error;
+
+showToast("Réduction modifiée.","success");
+
+await loadAdminPlayers();
+await loadMyPlayer();
+await loadBooks();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible de modifier la réduction.",
+"error"
+);
+}
+}
+
+
+/* ================= ADMIN ORDERS ================= */
+
+async function loadAdminOrders(){
+
+try{
+
+const {data,error}=
+await supabaseClient.rpc(
+"admin_list_orders",
+{
+admin_username:adminUsername,
+admin_password:adminPassword
+}
+);
+
+if(error)throw error;
+
+const orders=data||[];
+
+const pending=orders.filter(
+order=>order.status==="En attente"
+);
+
+const history=orders.filter(
+order=>
+order.status==="Terminée"||
+order.status==="Annulée"
+);
+
+renderPendingOrders(pending);
+renderCompletedOrders(history);
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById("pendingOrders").innerHTML=
+"<p>Erreur de chargement.</p>";
+
+document.getElementById("completedOrders").innerHTML=
+"<p>Erreur de chargement.</p>";
+}
+}
+
+
+function renderPendingOrders(orders){
+
+const container=document.getElementById("pendingOrders");
+
+if(!orders.length){
+
+container.innerHTML=
+'<p style="color:#9ba9c2">Aucune commande en attente.</p>';
+
+return;
+}
+
+container.innerHTML=orders.map(order=>{
+
+const items=Array.isArray(order.items)?order.items:[];
+
+const itemsHTML=items.map(item=>`
+<li>
+${escapeHTML(item.title)}
+× ${item.quantity}
+— ${item.price} 💎
+</li>
+`).join("");
+
+return `
+<div class="order">
+
+<div class="orderTitle">
+🛒 Commande #${order.id}
+</div>
+
+<div class="orderMeta">
+
+👤 ${escapeHTML(order.username)}
+
+<br>
+
+💎 Total : ${order.total}
+
+<br>
+
+🕒 ${formatDate(order.created_at)}
+
+</div>
+
+<ul class="orderItems">
+${itemsHTML||"<li>Aucun article</li>"}
+</ul>
+
+<button
+class="btn btnGreen"
+onclick="validateOrder('${order.id}')">
+✅ Valider la commande
+</button>
+
+<button
+class="btn btnRed"
+onclick="cancelOrder('${order.id}')">
+❌ Annuler
+</button>
+
+</div>
+`;
+
+}).join("");
+}
+
+
+/* ================= HISTORY ================= */
+
+function renderCompletedOrders(orders){
+
+const container=document.getElementById("completedOrders");
+
+if(!orders.length){
+
+container.innerHTML=
+'<p style="color:#9ba9c2">Aucun historique.</p>';
+
+return;
+}
+
+container.innerHTML=orders.map(order=>{
+
+let statusText="❓";
+
+if(order.status==="Terminée")statusText="✅ Terminée";
+else if(order.status==="Annulée")statusText="❌ Annulée";
+
+const items=Array.isArray(order.items)?order.items:[];
+
+const itemsHTML=items.map(item=>`
+<li>
+${escapeHTML(item.title)}
+× ${item.quantity}
+— ${item.price} 💎
+</li>
+`).join("");
+
+return `
+<div class="order">
+
+<div class="orderTitle">
+${statusText} — Commande #${order.id}
+</div>
+
+<div class="orderMeta">
+
+👤 ${escapeHTML(order.username)}
+
+<br>
+
+💎 Total : ${order.total}
+
+<br>
+
+🕒 ${formatDate(order.created_at)}
+
+</div>
+
+<ul class="orderItems">
+${itemsHTML||"<li>Aucun article</li>"}
+</ul>
+
+</div>
+`;
+
+}).join("");
+}
+
+
+/* ================= VALIDATE ORDER ================= */
+
+async function validateOrder(orderId){
+
+if(!confirm(
+"Valider cette commande ?\n\nLe stock sera diminué."
+))return;
+
+try{
+
+const {error}=
+await supabaseClient.rpc(
+"admin_validate_order",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+order_id:Number(orderId)
+}
+);
+
+if(error)throw error;
+
+showToast(
+"Commande validée et stock mis à jour.",
+"success"
+);
+
+await loadAdmin();
+await loadBooks();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible de valider la commande.",
+"error"
+);
+}
+}
+
+
+/* ================= CANCEL ORDER ================= */
+
+async function cancelOrder(orderId){
+
+if(!confirm(
+"Annuler cette commande ?\n\nLes diamants seront remboursés."
+))return;
+
+try{
+
+const {error}=
+await supabaseClient.rpc(
+"admin_cancel_order",
+{
+admin_username:adminUsername,
+admin_password:adminPassword,
+order_id:Number(orderId)
+}
+);
+
+if(error)throw error;
+
+showToast(
+"Commande annulée et diamants remboursés.",
+"success"
+);
+
+await loadAdmin();
+await loadBooks();
+await loadMyPlayer();
+await loadMyOrders();
+
+}catch(error){
+
+console.error(error);
+
+showToast(
+error.message||"Impossible d'annuler la commande.",
+"error"
+);
+}
+}
+
+
+/* ================= LOGOUT ================= */
+
+async function logout(){
+
+try{
+await supabaseClient.auth.signOut();
+}catch(error){
+console.error(error);
+}
+
+currentUser=null;
+currentProfile=null;
+isAdmin=false;
+adminUsername=null;
+adminPassword=null;
+
+showLogin();
+}
+
+
+/* ================= REALTIME BOOKS ================= */
+
+supabaseClient
+.channel("diamond-books-books")
+.on(
+"postgres_changes",
+{
+event:"*",
+schema:"public",
+table:"books"
+},
+async()=>{
+console.log("🔄 Livres mis à jour");
+
+await loadBooks();
+
+if(isAdmin){
+await loadAdminBooks();
+}
+}
+)
+.subscribe();
+
+
+/* ================= ADMIN AUTO REFRESH ================= */
+
+setInterval(async()=>{
+
+const adminScreen=document.getElementById("adminScreen");
+
+if(
+isAdmin &&
+!adminScreen.classList.contains("hidden")
+){
+
+await loadAdminOrders();
+
+}
+
+},5000);
+
+
+/* ================= ENTER KEYS ================= */
 
 document
-    .getElementById(
-        "usernameInput"
-    )
-    .addEventListener(
-        "keydown",
-        event => {
+.getElementById("usernameInput")
+.addEventListener("keydown",event=>{
 
-            if (
-                event.key === "Enter"
-            ) {
+if(event.key==="Enter"){
+createAccount();
+}
 
-                createAccount();
-            }
-
-        }
-    );
+});
 
 
 document
-    .getElementById(
-        "adminPassword"
-    )
-    .addEventListener(
-        "keydown",
-        event => {
+.getElementById("adminPassword")
+.addEventListener("keydown",event=>{
 
-            if (
-                event.key === "Enter"
-            ) {
+if(event.key==="Enter"){
+loginAdmin();
+}
 
-                loginAdmin();
-            }
-
-        }
-    );
+});
 
 
-/* =========================================================
-   START
-========================================================= */
+/* ================= START ================= */
 
 init();
 
