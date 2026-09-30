@@ -1,279 +1,479 @@
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Diamond Books</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 * {
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #111827;
-    color: white;
+:root {
+    --bg: #090d16;
+    --bg2: #101827;
+    --panel: #151f31;
+    --panel2: #1b2940;
+    --border: #2d405f;
+    --text: #f2f6ff;
+    --muted: #9ba9c2;
+    --diamond: #59e5ff;
+    --diamond2: #249bc4;
+    --green: #55e08a;
+    --red: #ff6578;
+    --yellow: #ffd85c;
 }
 
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 20% 0%, #163d59 0, transparent 35%),
+        radial-gradient(circle at 90% 10%, #22204b 0, transparent 30%),
+        var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ---------------- HEADER ---------------- */
+
 header {
-    background: #0b1220;
-    border-bottom: 2px solid #22c55e;
-    padding: 15px 30px;
+    height: 72px;
+    padding: 0 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: rgba(10, 15, 27, .92);
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 50;
+    backdrop-filter: blur(12px);
 }
 
 .logo {
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 900;
+    font-size: 22px;
+}
+
+.logoDiamond {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #c9fbff, #41d8ff 50%, #147aa4);
+    transform: rotate(45deg);
+    box-shadow: 0 0 20px rgba(89, 229, 255, .45);
+}
+
+.logo span {
+    color: var(--diamond);
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.diamondBalance {
+    padding: 9px 13px;
+    border-radius: 10px;
+    background: #102b3c;
+    border: 1px solid #27637a;
+    color: var(--diamond);
     font-weight: bold;
-    color: #67e8f9;
 }
 
-nav button {
-    background: transparent;
-    border: none;
+/* ---------------- BUTTONS ---------------- */
+
+.btn {
+    border: 0;
+    border-radius: 9px;
+    padding: 10px 15px;
     color: white;
-    margin: 0 5px;
-    cursor: pointer;
-    font-size: 15px;
+    background: #263652;
+    transition: .15s;
 }
 
-nav button:hover {
-    color: #67e8f9;
+.btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
 }
+
+.btnPrimary {
+    background: linear-gradient(135deg, #1fa9d2, #147ca4);
+}
+
+.btnGreen {
+    background: #218b52;
+}
+
+.btnRed {
+    background: #a83245;
+}
+
+.btnYellow {
+    background: #9a7718;
+}
+
+.btnSmall {
+    padding: 7px 10px;
+    font-size: 13px;
+}
+
+/* ---------------- MAIN ---------------- */
 
 main {
-    max-width: 1200px;
+    max-width: 1250px;
     margin: auto;
-    padding: 30px 20px;
-}
-
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
+    padding: 35px 20px 70px;
 }
 
 .hero {
     text-align: center;
-    padding: 60px 20px;
+    margin-bottom: 35px;
 }
 
 .hero h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
-    color: #67e8f9;
+    margin: 0;
+    font-size: clamp(34px, 6vw, 60px);
+    letter-spacing: -2px;
+}
+
+.hero h1 span {
+    color: var(--diamond);
+    text-shadow: 0 0 25px rgba(89, 229, 255, .3);
 }
 
 .hero p {
-    color: #cbd5e1;
-    font-size: 18px;
+    color: var(--muted);
+    font-size: 16px;
 }
 
-.btn {
-    background: #22c55e;
-    color: white;
-    border: none;
-    padding: 11px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
+/* ---------------- BOOKS ---------------- */
 
-.btn:hover {
-    background: #16a34a;
-}
-
-.btn.red {
-    background: #ef4444;
-}
-
-.btn.blue {
-    background: #0891b2;
-}
-
-.btn.gray {
-    background: #475569;
-}
-
-.books {
+.booksGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 18px;
 }
 
 .book {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 15px;
-    transition: .2s;
+    background: linear-gradient(160deg, #172238, #111a2a);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 20px;
+    transition: .18s;
 }
 
 .book:hover {
-    transform: translateY(-3px);
-    border-color: #67e8f9;
+    transform: translateY(-4px);
+    border-color: #4e719d;
+    box-shadow: 0 12px 35px rgba(0,0,0,.25);
 }
 
-.cover {
-    width: 100%;
-    height: 220px;
-    background: #0f172a;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    overflow: hidden;
+.bookIcon {
+    width: 64px;
+    height: 76px;
+    margin: 0 auto 17px;
+    background: linear-gradient(135deg, #76522d, #432b18);
+    border: 3px solid #a67a45;
+    border-radius: 4px;
+    position: relative;
+    box-shadow: 5px 5px 0 rgba(0,0,0,.25);
 }
 
-.cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.cover span {
-    font-size: 60px;
+.bookIcon::after {
+    content: "";
+    position: absolute;
+    width: 35px;
+    height: 4px;
+    background: #d2a568;
+    top: 27px;
+    left: 12px;
+    box-shadow: 0 12px #d2a568;
 }
 
 .book h3 {
-    margin: 5px 0;
+    margin: 0 0 8px;
+    text-align: center;
 }
 
 .description {
-    color: #94a3b8;
-    min-height: 40px;
+    color: var(--muted);
+    font-size: 14px;
+    min-height: 42px;
 }
 
 .price {
-    font-size: 20px;
-    color: #67e8f9;
+    color: var(--diamond);
+    font-weight: 900;
+    font-size: 21px;
+}
+
+.oldPrice {
+    text-decoration: line-through;
+    color: #77839a;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.discount {
+    display: inline-block;
+    margin-top: 7px;
+    padding: 4px 7px;
+    border-radius: 6px;
+    background: rgba(85,224,138,.12);
+    color: var(--green);
+    font-size: 12px;
     font-weight: bold;
-    margin: 10px 0;
 }
 
 .stock {
-    color: #94a3b8;
+    color: var(--muted);
     font-size: 13px;
+    margin: 12px 0;
 }
 
-.card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
+.stock.low {
+    color: var(--yellow);
+}
+
+.stock.empty {
+    color: var(--red);
+}
+
+.bookActions {
+    display: flex;
+    gap: 8px;
+}
+
+.bookActions button {
+    flex: 1;
+}
+
+/* ---------------- PANELS ---------------- */
+
+.panel {
+    background: rgba(21, 31, 49, .9);
+    border: 1px solid var(--border);
+    border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
 }
 
-.auth-card {
-    max-width: 450px;
-    margin: 60px auto;
+.panel h2 {
+    margin-top: 0;
+}
+
+/* ---------------- LOGIN ---------------- */
+
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.loginBox {
+    width: min(440px, 100%);
+    background: rgba(21, 31, 49, .95);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 25px 80px rgba(0,0,0,.4);
+}
+
+.loginBox h1 {
     text-align: center;
 }
 
-input, textarea, select {
+.loginBox p {
+    color: var(--muted);
+    text-align: center;
+}
+
+input {
     width: 100%;
-    padding: 10px;
-    margin: 6px 0 14px;
-    border-radius: 7px;
-    border: 1px solid #475569;
-    background: #0f172a;
-    color: white;
-}
-
-label {
-    color: #cbd5e1;
-    display: block;
-    text-align: left;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
     padding: 12px;
-    border-bottom: 1px solid #334155;
-    text-align: left;
+    background: #0c1422;
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
 }
 
-th {
-    color: #67e8f9;
+input:focus {
+    border-color: var(--diamond);
 }
 
-.balance {
-    color: #67e8f9;
+.formGroup {
+    margin: 13px 0;
+}
+
+.formGroup label {
+    display: block;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.loginBox .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ---------------- ADMIN ---------------- */
+
+.adminGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.order {
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #111a2a;
+}
+
+.orderTitle {
     font-weight: bold;
 }
 
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #334155;
-}
-
-.small {
+.orderMeta {
+    color: var(--muted);
     font-size: 13px;
-    color: #94a3b8;
+    margin: 6px 0 10px;
 }
 
-.badge {
-    display: inline-block;
-    padding: 5px 8px;
-    border-radius: 6px;
-    background: #164e63;
-    color: #67e8f9;
-    font-size: 12px;
+.adminBook {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
 }
 
-.order-item {
-    background: #0f172a;
-    border-radius: 8px;
-    padding: 10px;
-    margin: 8px 0;
+.adminBook:last-child {
+    border-bottom: 0;
 }
 
-footer {
-    text-align: center;
-    color: #64748b;
-    padding: 40px;
+.adminBookControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
-.error {
-    color: #f87171;
-    margin: 10px 0;
+.adminBookControls input {
+    width: 90px;
+    padding: 7px;
 }
 
-.success {
-    color: #4ade80;
-    margin: 10px 0;
+/* ---------------- TOAST ---------------- */
+
+#toastContainer {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-@media(max-width:700px) {
+.toast {
+    padding: 13px 17px;
+    border-radius: 10px;
+    background: #172238;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    animation: toastIn .2s ease;
+}
+
+.toast.success {
+    border-color: #2b8e58;
+}
+
+.toast.error {
+    border-color: #a83c4e;
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------------- MODAL ---------------- */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 90;
+    padding: 20px;
+}
+
+.modalBox {
+    width: min(500px, 100%);
+    background: #151f31;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 25px;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media(max-width: 650px) {
     header {
-        flex-direction: column;
-        gap: 10px;
+        padding: 0 12px;
     }
 
-    .hero h1 {
-        font-size: 35px;
+    .logo {
+        font-size: 17px;
     }
 
-    table {
-        font-size: 12px;
+    .diamondBalance {
+        font-size: 13px;
+    }
+
+    main {
+        padding: 25px 12px 50px;
+    }
+
+    .adminBook {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -281,427 +481,452 @@ footer {
 
 <body>
 
-<header>
-    <div class="logo">💎 Diamond Books</div>
+<!-- =========================================================
+     LOGIN
+========================================================= -->
 
-    <nav id="navigation">
-        <button onclick="showPage('home')">Accueil</button>
-        <button onclick="showPage('books')">📚 Livres</button>
-        <button onclick="showPage('cart')">🛒 Panier</button>
-        <button onclick="showPage('account')">👤 Compte</button>
-        <button onclick="showAdminLogin()">🛠️ Admin</button>
-    </nav>
+<section id="loginScreen">
+
+    <div class="loginBox">
+
+        <div class="logo" style="justify-content:center;">
+            <div class="logoDiamond"></div>
+            <div>Diamond <span>Books</span></div>
+        </div>
+
+        <h1>Bienvenue</h1>
+
+        <p>
+            Choisis ton pseudo pour créer ou retrouver ton compte
+            sur cet appareil.
+        </p>
+
+        <div class="formGroup">
+            <label for="usernameInput">Pseudo</label>
+            <input
+                id="usernameInput"
+                type="text"
+                maxlength="24"
+                placeholder="Ton pseudo..."
+                autocomplete="off"
+            >
+        </div>
+
+        <button class="btn btnPrimary" onclick="createAccount()">
+            Entrer dans la boutique
+        </button>
+
+        <button class="btn" onclick="showAdminLogin()">
+            Connexion administrateur
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SHOP
+========================================================= -->
+
+<div id="shopScreen" class="hidden">
+
+<header>
+
+    <div class="logo">
+        <div class="logoDiamond"></div>
+        <div>Diamond <span>Books</span></div>
+    </div>
+
+    <div class="headerRight">
+
+        <div id="currentUser"></div>
+
+        <div class="diamondBalance">
+            💎 <span id="balance">0</span>
+        </div>
+
+        <button class="btn btnSmall" onclick="showOrders()">
+            Mes commandes
+        </button>
+
+        <button
+            id="adminButton"
+            class="btn btnSmall hidden"
+            onclick="openAdmin()">
+            Admin
+        </button>
+
+        <button class="btn btnSmall" onclick="logout()">
+            Quitter
+        </button>
+
+    </div>
+
 </header>
+
 
 <main>
 
-<!-- =========================================================
-     CONNEXION / CREATION DE COMPTE
-========================================================= -->
+    <section class="hero">
 
-<section id="auth" class="page">
-    <div class="card auth-card">
-
-        <h1>👤 Bienvenue</h1>
+        <h1>
+            La bibliothèque
+            <span>Diamond</span>
+        </h1>
 
         <p>
-            Crée ton compte avec ton nom d'utilisateur.
+            Achète tes livres avec des diamants.
         </p>
 
-        <input
-            id="usernameInput"
-            placeholder="Nom d'utilisateur"
-            maxlength="20"
-        >
-
-        <div id="authMessage"></div>
-
-        <button class="btn" onclick="createAccount()">
-            Créer mon compte
-        </button>
-
-    </div>
-</section>
+    </section>
 
 
-<!-- =========================================================
-     ACCUEIL
-========================================================= -->
+    <section class="panel">
 
-<section id="home" class="page active">
+        <h2>📚 Livres disponibles</h2>
 
-    <div class="hero">
+        <div id="booksGrid" class="booksGrid">
+            <p>Chargement...</p>
+        </div>
 
-        <h1>💎 Diamond Books</h1>
-
-        <p>
-            Ta bibliothèque de livres Minecraft.
-        </p>
-
-        <br>
-
-        <button
-            class="btn"
-            onclick="showPage('books')"
-        >
-            Voir les livres
-        </button>
-
-    </div>
-
-</section>
+    </section>
 
 
-<!-- =========================================================
-     LIVRES
-========================================================= -->
+    <section id="myOrdersPanel" class="panel hidden">
 
-<section id="books" class="page">
+        <h2>📜 Mes commandes</h2>
 
-    <h1>📚 Nos livres</h1>
+        <div id="myOrders"></div>
 
-    <div id="booksList" class="books"></div>
+    </section>
 
-</section>
+</main>
 
-
-<!-- =========================================================
-     PANIER
-========================================================= -->
-
-<section id="cart" class="page">
-
-    <h1>🛒 Ton panier</h1>
-
-    <div class="card">
-
-        <div id="cartList"></div>
-
-        <hr>
-
-        <h2>
-            Total :
-            <span
-                id="cartTotal"
-                class="balance"
-            >
-                0 💎
-            </span>
-        </h2>
-
-        <button
-            class="btn"
-            onclick="checkout()"
-        >
-            Commander
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     COMPTE
-========================================================= -->
-
-<section id="account" class="page">
-
-    <h1>👤 Mon compte</h1>
-
-    <div class="card">
-
-        <h2 id="accountName"></h2>
-
-        <p>
-            Solde :
-            <span
-                id="accountBalance"
-                class="balance"
-            ></span>
-        </p>
-
-        <p>
-            Réduction personnelle :
-            <span
-                id="accountDiscount"
-                class="badge"
-            ></span>
-        </p>
-
-        <button
-            class="btn gray"
-            onclick="logout()"
-        >
-            Changer de compte
-        </button>
-
-    </div>
-
-    <div class="card">
-
-        <h2>📦 Mes commandes</h2>
-
-        <div id="ordersList"></div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ADMIN LOGIN
-========================================================= -->
-
-<section id="adminLogin" class="page">
-
-    <div class="card auth-card">
-
-        <h1>🛠️ Administration</h1>
-
-        <p>
-            Connexion réservée à l'administrateur.
-        </p>
-
-        <label>
-            Nom d'utilisateur
-        </label>
-
-        <input
-            id="adminUsername"
-            placeholder="Pseudo"
-        >
-
-        <label>
-            Mot de passe
-        </label>
-
-        <input
-            id="adminPassword"
-            type="password"
-            placeholder="Mot de passe"
-        >
-
-        <div id="adminLoginMessage"></div>
-
-        <button
-            class="btn"
-            onclick="loginAdmin()"
-        >
-            Se connecter
-        </button>
-
-    </div>
-
-</section>
+</div>
 
 
 <!-- =========================================================
      ADMIN
 ========================================================= -->
 
-<section id="admin" class="page">
+<div id="adminScreen" class="hidden">
 
-    <h1>🛠️ Administration</h1>
+<header>
 
-    <button
-        class="btn red"
-        onclick="logoutAdmin()"
-    >
-        Déconnexion admin
-    </button>
+    <div class="logo">
+        <div class="logoDiamond"></div>
+        <div>Diamond <span>Books</span> — Admin</div>
+    </div>
 
-    <br><br>
+    <div class="headerRight">
 
+        <button class="btn btnSmall" onclick="closeAdmin()">
+            Retour boutique
+        </button>
 
-    <!-- AJOUT LIVRE -->
-
-    <div class="card">
-
-        <h2>➕ Ajouter un livre</h2>
-
-        <label>Titre</label>
-
-        <input
-            id="newTitle"
-            placeholder="Ex : Guide Redstone"
-        >
-
-        <label>Description</label>
-
-        <textarea
-            id="newDescription"
-            placeholder="Description du livre"
-        ></textarea>
-
-        <label>Prix en diamants</label>
-
-        <input
-            id="newPrice"
-            type="number"
-            min="0"
-        >
-
-        <label>Stock</label>
-
-        <input
-            id="newStock"
-            type="number"
-            min="0"
-        >
-
-        <label>
-            URL de la couverture (facultatif)
-        </label>
-
-        <input
-            id="newImage"
-            placeholder="https://..."
-        >
-
-        <button
-            class="btn"
-            onclick="addBook()"
-        >
-            Ajouter
+        <button class="btn btnSmall" onclick="loadAdmin()">
+            🔄 Actualiser
         </button>
 
     </div>
 
+</header>
 
-    <!-- GESTION LIVRES -->
 
-    <div class="card">
+<main>
+
+    <div class="hero">
+
+        <h1>
+            Panneau <span>Admin</span>
+        </h1>
+
+        <p>
+            Gestion des livres, stocks, réductions et commandes.
+        </p>
+
+    </div>
+
+
+    <!-- AJOUT LIVRE -->
+
+    <section class="panel">
+
+        <h2>➕ Ajouter un livre</h2>
+
+        <div class="adminGrid">
+
+            <div>
+                <div class="formGroup">
+                    <label>Nom du livre</label>
+                    <input
+                        id="newBookTitle"
+                        maxlength="100"
+                        placeholder="Ex : Le Guide du Nether"
+                    >
+                </div>
+
+                <div class="formGroup">
+                    <label>Description</label>
+                    <input
+                        id="newBookDescription"
+                        maxlength="300"
+                        placeholder="Description du livre..."
+                    >
+                </div>
+            </div>
+
+            <div>
+
+                <div class="formGroup">
+                    <label>Prix en diamants</label>
+                    <input
+                        id="newBookPrice"
+                        type="number"
+                        min="0"
+                        value="10"
+                    >
+                </div>
+
+                <div class="formGroup">
+                    <label>Stock</label>
+                    <input
+                        id="newBookStock"
+                        type="number"
+                        min="0"
+                        value="1"
+                    >
+                </div>
+
+                <button
+                    class="btn btnPrimary"
+                    onclick="addBook()">
+                    Ajouter le livre
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- LIVRES -->
+
+    <section class="panel">
 
         <h2>📚 Gestion des livres</h2>
 
-        <div id="adminBooks"></div>
+        <div id="adminBooks">
+            Chargement...
+        </div>
 
-    </div>
-
-
-    <!-- JOUEURS -->
-
-    <div class="card">
-
-        <h2>👤 Gestion des joueurs</h2>
-
-        <div id="adminPlayers"></div>
-
-    </div>
+    </section>
 
 
     <!-- COMMANDES -->
 
-    <div class="card">
+    <section class="panel">
 
-        <h2>📦 Commandes</h2>
+        <h2>🛒 Commandes en attente</h2>
 
-        <div id="adminOrders"></div>
+        <div id="pendingOrders">
+            Chargement...
+        </div>
 
-    </div>
+    </section>
 
-</section>
+
+    <!-- HISTORIQUE -->
+
+    <section class="panel">
+
+        <h2>📜 Historique des commandes</h2>
+
+        <div id="completedOrders">
+            Chargement...
+        </div>
+
+    </section>
 
 </main>
 
-<footer>
-    Diamond Books — monnaie virtuelle 💎
-</footer>
+</div>
+
+
+<!-- =========================================================
+     ADMIN LOGIN MODAL
+========================================================= -->
+
+<div id="adminModal" class="modal hidden">
+
+    <div class="modalBox">
+
+        <h2>🔐 Administrateur</h2>
+
+        <div class="formGroup">
+            <label>Nom administrateur</label>
+            <input
+                id="adminUsername"
+                value="Hornet"
+            >
+        </div>
+
+        <div class="formGroup">
+            <label>Mot de passe</label>
+            <input
+                id="adminPassword"
+                type="password"
+                placeholder="Mot de passe"
+            >
+        </div>
+
+        <button
+            class="btn btnPrimary"
+            onclick="loginAdmin()">
+            Se connecter
+        </button>
+
+        <button
+            class="btn"
+            onclick="closeAdminModal()">
+            Annuler
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="toastContainer"></div>
 
 
 <script>
-
 /* =========================================================
-   DONNÉES
+   SUPABASE
 ========================================================= */
 
-let books =
-    JSON.parse(
-        localStorage.getItem("books")
-    ) || [
+const SUPABASE_URL =
+    "https://sltjeabckshafocqmtco.supabase.co";
 
-        {
-            id: 1,
-            title: "Guide de survie",
-            description:
-                "Tout ce qu'il faut savoir pour survivre.",
-            price: 5,
-            stock: 20,
-            image: ""
-        },
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_JcZRrsHq8opplahVtbjavw_DrA8ai0r";
 
-        {
-            id: 2,
-            title: "Guide Redstone",
-            description:
-                "Découvre les bases de la redstone.",
-            price: 10,
-            stock: 10,
-            image: ""
-        },
-
-        {
-            id: 3,
-            title: "Guide du Nether",
-            description:
-                "Explore le Nether sans te perdre.",
-            price: 15,
-            stock: 8,
-            image: ""
-        },
-
-        {
-            id: 4,
-            title: "Guide des farms",
-            description:
-                "Construis des farms efficaces.",
-            price: 20,
-            stock: 5,
-            image: ""
-        }
-    ];
-
-
-let players =
-    JSON.parse(
-        localStorage.getItem("players")
-    ) || [];
-
-
-let orders =
-    JSON.parse(
-        localStorage.getItem("orders")
-    ) || [];
-
-
-let currentPlayer = null;
-
-let cart = [];
-
-let adminLoggedIn = false;
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
 
 /* =========================================================
-   SAUVEGARDE
+   VARIABLES
 ========================================================= */
 
-function saveData() {
+let currentUser = null;
+let currentProfile = null;
+let isAdmin = false;
 
-    localStorage.setItem(
-        "books",
-        JSON.stringify(books)
-    );
+let books = [];
+let myOrders = [];
 
-    localStorage.setItem(
-        "players",
-        JSON.stringify(players)
-    );
 
-    localStorage.setItem(
-        "orders",
-        JSON.stringify(orders)
-    );
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function showToast(message, type = "") {
+
+    const container =
+        document.getElementById("toastContainer");
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        "toast " + type;
+
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3500);
+}
+
+
+function money(value) {
+
+    return Math.round(Number(value || 0));
+
+}
+
+
+function formatDate(date) {
+
+    if (!date) {
+        return "";
+    }
+
+    return new Date(date).toLocaleString("fr-FR");
+
+}
+
+
+/* =========================================================
+   AUTH SUPABASE
+========================================================= */
+
+async function ensureAuth() {
+
+    let {
+        data: { session }
+    } = await supabaseClient.auth.getSession();
+
+    if (session) {
+
+        currentUser = session.user;
+
+        return currentUser;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signInAnonymously();
+
+    if (error) {
+
+        console.error(error);
+
+        showToast(
+            "Impossible de créer la session Supabase.",
+            "error"
+        );
+
+        throw error;
+    }
+
+    currentUser = data.user;
+
+    return currentUser;
 }
 
 
@@ -709,182 +934,229 @@ function saveData() {
    COMPTE
 ========================================================= */
 
-function checkAccount() {
-
-    const savedUsername =
-        localStorage.getItem(
-            "currentPlayerUsername"
-        );
-
-    if (!savedUsername) {
-
-        showPage("auth");
-
-        return;
-    }
-
-    currentPlayer =
-        players.find(
-            p => p.name === savedUsername
-        );
-
-    if (!currentPlayer) {
-
-        localStorage.removeItem(
-            "currentPlayerUsername"
-        );
-
-        showPage("auth");
-
-        return;
-    }
-
-    showPage("home");
-}
-
-
-function createAccount() {
+async function createAccount() {
 
     const input =
-        document.getElementById(
-            "usernameInput"
-        );
+        document.getElementById("usernameInput");
 
     const username =
         input.value.trim();
 
-    const message =
-        document.getElementById(
-            "authMessage"
-        );
-
     if (!username) {
 
-        message.innerHTML =
-            `<p class="error">
-                Choisis un nom d'utilisateur.
-            </p>`;
-
-        return;
-    }
-
-    if (
-        username.toLowerCase() ===
-        "hornet"
-    ) {
-
-        message.innerHTML =
-            `<p class="error">
-                Ce nom est réservé.
-            </p>`;
-
-        return;
-    }
-
-    const existing =
-        players.find(
-            p =>
-                p.name.toLowerCase() ===
-                username.toLowerCase()
+        showToast(
+            "Entre un pseudo.",
+            "error"
         );
 
-    if (existing) {
-
-        currentPlayer = existing;
-
-    } else {
-
-        currentPlayer = {
-
-            id:
-                players.length > 0
-                    ? Math.max(
-                        ...players.map(
-                            p => p.id
-                        )
-                    ) + 1
-                    : 1,
-
-            name: username,
-
-            diamonds: 100,
-
-            discount: 0
-        };
-
-        players.push(currentPlayer);
-
-        saveData();
+        return;
     }
 
-    localStorage.setItem(
-        "currentPlayerUsername",
-        currentPlayer.name
-    );
+    if (username.length < 2) {
 
-    input.value = "";
+        showToast(
+            "Le pseudo doit contenir au moins 2 caractères.",
+            "error"
+        );
 
-    message.innerHTML =
-        `<p class="success">
-            Compte créé !
-        </p>`;
+        return;
+    }
 
-    showPage("home");
-}
+    if (!/^[a-zA-Z0-9_À-ÿ -]+$/.test(username)) {
 
+        showToast(
+            "Pseudo invalide.",
+            "error"
+        );
 
-function logout() {
+        return;
+    }
 
-    currentPlayer = null;
+    try {
 
-    cart = [];
+        await ensureAuth();
 
-    localStorage.removeItem(
-        "currentPlayerUsername"
-    );
+        /*
+         * On vérifie si le pseudo existe déjà.
+         */
 
-    showPage("auth");
+        const {
+            data: existing,
+            error: existingError
+        } = await supabaseClient
+            .from("profiles")
+            .select("id, username")
+            .eq("username", username)
+            .maybeSingle();
+
+        if (existingError) {
+            throw existingError;
+        }
+
+        /*
+         * Si le pseudo appartient déjà à un autre navigateur,
+         * on ne peut pas le récupérer avec le système
+         * de compte anonyme.
+         */
+
+        if (existing && existing.id !== currentUser.id) {
+
+            showToast(
+                "Ce pseudo est déjà utilisé.",
+                "error"
+            );
+
+            return;
+        }
+
+        /*
+         * Création du profil.
+         */
+
+        const {
+            data: profile,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .upsert({
+                id: currentUser.id,
+                username: username
+            })
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        currentProfile = profile;
+
+        localStorage.setItem(
+            "diamond_books_username",
+            username
+        );
+
+        await enterShop();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message || "Erreur lors de la création du compte.",
+            "error"
+        );
+    }
 }
 
 
 /* =========================================================
-   NAVIGATION
+   INITIALISATION
 ========================================================= */
 
-function showPage(page) {
+async function init() {
 
-    if (
-        page !== "auth" &&
-        page !== "adminLogin" &&
-        page !== "admin" &&
-        !currentPlayer
-    ) {
+    try {
 
-        page = "auth";
-    }
+        await ensureAuth();
 
-    if (
-        page === "admin" &&
-        !adminLoggedIn
-    ) {
+        const {
+            data: profile,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", currentUser.id)
+            .maybeSingle();
 
-        page = "adminLogin";
-    }
+        if (error) {
+            throw error;
+        }
 
-    document
-        .querySelectorAll(".page")
-        .forEach(
-            p =>
-                p.classList.remove(
-                    "active"
-                )
+        if (profile) {
+
+            currentProfile = profile;
+
+            await enterShop();
+
+        } else {
+
+            /*
+             * On préremplit le dernier pseudo utilisé
+             * sur cet appareil.
+             */
+
+            const saved =
+                localStorage.getItem(
+                    "diamond_books_username"
+                );
+
+            if (saved) {
+
+                document.getElementById(
+                    "usernameInput"
+                ).value = saved;
+
+            }
+
+            showLogin();
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Erreur de connexion à Supabase.",
+            "error"
         );
+    }
+}
+
+
+/* =========================================================
+   AFFICHAGE
+========================================================= */
+
+function showLogin() {
 
     document
-        .getElementById(page)
-        .classList.add("active");
+        .getElementById("loginScreen")
+        .classList.remove("hidden");
 
-    renderAll();
+    document
+        .getElementById("shopScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("adminScreen")
+        .classList.add("hidden");
+}
+
+
+async function enterShop() {
+
+    document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("adminScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("shopScreen")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("currentUser")
+        .textContent =
+        currentProfile.username;
+
+    await loadBooks();
+    await loadMyOrders();
+
 }
 
 
@@ -892,929 +1164,806 @@ function showPage(page) {
    LIVRES
 ========================================================= */
 
-function renderBooks() {
+async function loadBooks() {
 
-    const container =
-        document.getElementById(
-            "booksList"
-        );
+    try {
 
-    if (!container) return;
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc("get_books_for_user");
 
-    container.innerHTML = "";
+        if (error) {
+            throw error;
+        }
 
-    books.forEach(book => {
+        books = data || [];
 
-        const div =
-            document.createElement(
-                "div"
-            );
+        renderBooks();
 
-        div.className = "book";
+    } catch (error) {
 
-        const cover =
-            book.image
-                ? `<img src="${escapeHTML(
-                    book.image
-                )}" alt="Couverture">`
-                : `<span>📖</span>`;
+        console.error(error);
 
-        div.innerHTML = `
+        /*
+         * Fallback si ton SQL retourne directement les livres.
+         */
 
-            <div class="cover">
-                ${cover}
-            </div>
+        const {
+            data,
+            error: fallbackError
+        } = await supabaseClient
+            .from("books")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
 
-            <h3>
-                ${escapeHTML(book.title)}
-            </h3>
+        if (fallbackError) {
 
-            <p class="description">
-                ${escapeHTML(
-                    book.description
-                )}
-            </p>
+            document
+                .getElementById("booksGrid")
+                .innerHTML =
+                "<p>Impossible de charger les livres.</p>";
 
-            <div class="price">
-                💎 ${book.price}
-            </div>
-
-            <div class="stock">
-                Stock disponible :
-                ${getAvailableStock(book.id)}
-            </div>
-
-            <br>
-
-            <button
-                class="btn"
-                onclick="addToCart(${book.id})"
-                ${
-                    getAvailableStock(
-                        book.id
-                    ) <= 0
-                    ? "disabled"
-                    : ""
-                }
-            >
-                ${
-                    getAvailableStock(
-                        book.id
-                    ) > 0
-                    ? "Ajouter au panier"
-                    : "Rupture"
-                }
-            </button>
-
-        `;
-
-        container.appendChild(div);
-    });
-}
-
-
-/* =========================================================
-   STOCK DISPONIBLE
-   Le stock réel n'est retiré qu'à la validation.
-   On réserve cependant les exemplaires présents
-   dans les commandes encore en attente.
-========================================================= */
-
-function getPendingQuantity(bookId) {
-
-    let quantity = 0;
-
-    orders.forEach(order => {
-
-        if (
-            order.status !==
-            "En attente"
-        ) {
             return;
         }
 
-        order.items.forEach(item => {
+        books = data || [];
 
-            if (
-                item.bookId ===
-                bookId
-            ) {
-
-                quantity +=
-                    item.quantity;
-            }
-        });
-    });
-
-    return quantity;
+        renderBooks();
+    }
 }
 
 
-function getAvailableStock(bookId) {
+function renderBooks() {
 
-    const book =
-        books.find(
-            b => b.id === bookId
-        );
+    const grid =
+        document.getElementById("booksGrid");
 
-    if (!book) return 0;
+    if (!books.length) {
 
-    return Math.max(
-        0,
-        book.stock -
-        getPendingQuantity(bookId)
-    );
-}
-
-
-/* =========================================================
-   PANIER
-========================================================= */
-
-function addToCart(bookId) {
-
-    const book =
-        books.find(
-            b => b.id === bookId
-        );
-
-    if (!book) return;
-
-    const existing =
-        cart.find(
-            item =>
-                item.bookId ===
-                bookId
-        );
-
-    const currentQuantity =
-        existing
-            ? existing.quantity
-            : 0;
-
-    if (
-        currentQuantity + 1 >
-        getAvailableStock(bookId)
-    ) {
-
-        alert(
-            "Stock disponible insuffisant."
-        );
+        grid.innerHTML = `
+            <p style="color:#9ba9c2">
+                Aucun livre disponible pour le moment.
+            </p>
+        `;
 
         return;
     }
 
-    if (existing) {
+    grid.innerHTML = books.map(book => {
 
-        existing.quantity++;
+        const basePrice =
+            Number(
+                book.price_diamonds ??
+                book.price ??
+                0
+            );
 
-    } else {
+        const discount =
+            Number(
+                book.discount_percent ??
+                book.discount ??
+                0
+            );
 
-        cart.push({
+        const finalPrice =
+            Math.floor(
+                basePrice * (100 - discount) / 100
+            );
 
-            bookId: bookId,
+        const stock =
+            Number(book.stock ?? 0);
 
-            quantity: 1
-        });
-    }
+        let stockClass = "";
 
-    renderCart();
-}
+        if (stock <= 0) {
+            stockClass = "empty";
+        } else if (stock <= 3) {
+            stockClass = "low";
+        }
 
+        return `
+            <article class="book">
 
-function removeFromCart(bookId) {
+                <div class="bookIcon"></div>
 
-    cart =
-        cart.filter(
-            item =>
-                item.bookId !==
-                bookId
-        );
+                <h3>
+                    ${escapeHTML(book.title)}
+                </h3>
 
-    renderCart();
-}
+                <div class="description">
+                    ${escapeHTML(
+                        book.description ||
+                        "Aucune description."
+                    )}
+                </div>
 
+                <div style="margin-top:14px">
 
-function renderCart() {
+                    ${
+                        discount > 0
+                        ? `
+                            <span class="oldPrice">
+                                ${basePrice} 💎
+                            </span>
+                        `
+                        : ""
+                    }
 
-    const container =
-        document.getElementById(
-            "cartList"
-        );
-
-    const totalElement =
-        document.getElementById(
-            "cartTotal"
-        );
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    let total = 0;
-
-    if (
-        cart.length === 0
-    ) {
-
-        container.innerHTML =
-            "<p>Ton panier est vide.</p>";
-
-    } else {
-
-        cart.forEach(item => {
-
-            const book =
-                books.find(
-                    b =>
-                        b.id ===
-                        item.bookId
-                );
-
-            if (!book) return;
-
-            const subtotal =
-                book.price *
-                item.quantity;
-
-            total += subtotal;
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-            div.className =
-                "cart-item";
-
-            div.innerHTML = `
-
-                <div>
-
-                    <strong>
-                        ${escapeHTML(
-                            book.title
-                        )}
-                    </strong>
-
-                    <br>
-
-                    <span class="small">
-                        ${item.quantity}
-                        ×
-                        ${book.price}
-                        💎
+                    <span class="price">
+                        ${finalPrice} 💎
                     </span>
 
                 </div>
 
-                <div>
+                ${
+                    discount > 0
+                    ? `
+                        <div class="discount">
+                            -${discount}%
+                        </div>
+                    `
+                    : ""
+                }
 
-                    <strong>
-                        ${subtotal} 💎
-                    </strong>
+                <div class="stock ${stockClass}">
+                    ${
+                        stock > 0
+                        ? `📦 ${stock} disponible(s)`
+                        : "❌ Rupture de stock"
+                    }
+                </div>
+
+                <div class="bookActions">
 
                     <button
-                        class="btn red"
-                        onclick="
-                            removeFromCart(
-                                ${book.id}
-                            )
-                        "
-                    >
-                        X
+                        class="btn btnPrimary"
+                        ${
+                            stock <= 0
+                            ? "disabled"
+                            : ""
+                        }
+                        onclick="orderBook('${book.id}')">
+
+                        Acheter
+
                     </button>
 
                 </div>
-            `;
 
-            container.appendChild(div);
-        });
-    }
+            </article>
+        `;
 
-    if (!currentPlayer) {
-
-        totalElement.textContent =
-            "0 💎";
-
-        return;
-    }
-
-    const discount =
-        currentPlayer.discount ||
-        0;
-
-    const discountedTotal =
-        Math.floor(
-            total *
-            (1 -
-                discount /
-                100)
-        );
-
-    totalElement.innerHTML =
-
-        discountedTotal +
-        " 💎" +
-
-        (
-            discount > 0
-                ? ` <span class="small">
-                    (-${discount}%)
-                   </span>`
-                : ""
-        );
+    }).join("");
 }
 
 
 /* =========================================================
    COMMANDER
-   IMPORTANT :
-   Le stock n'est PAS retiré ici.
 ========================================================= */
 
-function checkout() {
+async function orderBook(bookId) {
 
-    if (!currentPlayer) {
+    const book =
+        books.find(
+            b => String(b.id) === String(bookId)
+        );
 
-        showPage("auth");
+    if (!book) {
 
-        return;
-    }
-
-    if (
-        cart.length === 0
-    ) {
-
-        alert(
-            "Ton panier est vide."
+        showToast(
+            "Livre introuvable.",
+            "error"
         );
 
         return;
     }
 
-    let total = 0;
+    const stock =
+        Number(book.stock ?? 0);
 
-    for (
-        const item of cart
+    if (stock <= 0) {
+
+        showToast(
+            "Ce livre est en rupture de stock.",
+            "error"
+        );
+
+        return;
+    }
+
+    const quantityInput =
+        prompt(
+            `Combien d'exemplaires de "${book.title}" ?`,
+            "1"
+        );
+
+    if (quantityInput === null) {
+        return;
+    }
+
+    const quantity =
+        Number(quantityInput);
+
+    if (
+        !Number.isInteger(quantity) ||
+        quantity <= 0
     ) {
 
-        const book =
-            books.find(
-                b =>
-                    b.id ===
-                    item.bookId
+        showToast(
+            "Quantité invalide.",
+            "error"
+        );
+
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc(
+                "create_order",
+                {
+                    p_book_id: bookId,
+                    p_quantity: quantity
+                }
             );
 
-        if (!book) continue;
-
-        if (
-            item.quantity >
-            getAvailableStock(
-                item.bookId
-            )
-        ) {
-
-            alert(
-                "Stock insuffisant pour : " +
-                book.title
-            );
-
-            return;
+        if (error) {
+            throw error;
         }
 
-        total +=
-            book.price *
-            item.quantity;
-    }
-
-    const discount =
-        currentPlayer.discount ||
-        0;
-
-    total =
-        Math.floor(
-            total *
-            (
-                1 -
-                discount /
-                100
-            )
+        showToast(
+            "Commande créée ! Elle doit maintenant être validée par l'administrateur.",
+            "success"
         );
 
-    if (
-        currentPlayer.diamonds <
-        total
-    ) {
+        await loadBooks();
+        await loadMyOrders();
 
-        alert(
-            "Tu n'as pas assez de diamants.\n" +
-            "Il te faut " +
-            total +
-            " 💎."
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Impossible de créer la commande.",
+            "error"
         );
-
-        return;
     }
-
-    /*
-       Les diamants sont retirés
-       au moment de la commande.
-    */
-
-    currentPlayer.diamonds -=
-        total;
-
-
-    const order = {
-
-        id:
-            orders.length > 0
-                ? Math.max(
-                    ...orders.map(
-                        o => o.id
-                    )
-                ) + 1
-                : 1,
-
-        playerId:
-            currentPlayer.id,
-
-        playerName:
-            currentPlayer.name,
-
-        items:
-            cart.map(item => {
-
-                const book =
-                    books.find(
-                        b =>
-                            b.id ===
-                            item.bookId
-                    );
-
-                return {
-
-                    bookId:
-                        book.id,
-
-                    title:
-                        book.title,
-
-                    quantity:
-                        item.quantity,
-
-                    price:
-                        book.price
-                };
-            }),
-
-        total: total,
-
-        date:
-            new Date()
-                .toLocaleString(
-                    "fr-FR"
-                ),
-
-        status:
-            "En attente"
-    };
-
-
-    orders.push(order);
-
-    cart = [];
-
-    saveData();
-
-    renderAll();
-
-    alert(
-        "Commande #" +
-        order.id +
-        " créée !\n\n" +
-        "Elle est maintenant en attente de validation."
-    );
-
-    showPage("account");
 }
 
 
 /* =========================================================
-   COMPTE
+   MES COMMANDES
 ========================================================= */
 
-function renderAccount() {
+async function loadMyOrders() {
 
-    const name =
-        document.getElementById(
-            "accountName"
-        );
+    try {
 
-    if (
-        !name ||
-        !currentPlayer
-    ) return;
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("orders")
+            .select(`
+                *,
+                books (
+                    title
+                )
+            `)
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
-    name.textContent =
-        "👤 " +
-        currentPlayer.name;
+        if (error) {
+            throw error;
+        }
 
-    document
-        .getElementById(
-            "accountBalance"
-        )
-        .textContent =
-            currentPlayer.diamonds +
-            " 💎";
+        myOrders = data || [];
 
-    document
-        .getElementById(
-            "accountDiscount"
-        )
-        .textContent =
-            currentPlayer.discount +
-            "%";
+        renderMyOrders();
 
+    } catch (error) {
+
+        console.error(error);
+
+        document
+            .getElementById("myOrders")
+            .innerHTML =
+            "<p>Impossible de charger les commandes.</p>";
+    }
+}
+
+
+function renderMyOrders() {
 
     const container =
-        document.getElementById(
-            "ordersList"
-        );
+        document.getElementById("myOrders");
 
-    const myOrders =
-        orders.filter(
-            o =>
-                o.playerId ===
-                currentPlayer.id
-        );
-
-    if (
-        myOrders.length === 0
-    ) {
+    if (!myOrders.length) {
 
         container.innerHTML =
-            "<p>Aucune commande.</p>";
+            `<p style="color:#9ba9c2">
+                Tu n'as encore aucune commande.
+            </p>`;
 
         return;
     }
 
     container.innerHTML =
-        myOrders
-            .map(
-                order => `
+        myOrders.map(order => {
 
-                <div class="card">
+            const status =
+                order.status || "pending";
 
-                    <strong>
-                        Commande #${order.id}
-                    </strong>
+            let statusText =
+                "⏳ En attente";
 
-                    <p>
+            if (status === "completed") {
+                statusText = "✅ Validée";
+            }
+
+            if (status === "cancelled") {
+                statusText = "❌ Annulée";
+            }
+
+            return `
+                <div class="order">
+
+                    <div class="orderTitle">
                         ${escapeHTML(
-                            order.date
+                            order.books?.title ||
+                            "Livre"
                         )}
-                    </p>
+                    </div>
 
-                    <p>
-                        Total :
-                        <span class="balance">
-                            ${order.total} 💎
-                        </span>
-                    </p>
+                    <div class="orderMeta">
 
-                    <span class="badge">
-                        ${escapeHTML(
-                            order.status
+                        Quantité :
+                        ${order.quantity}
+
+                        ·
+
+                        Prix :
+                        ${order.total_price} 💎
+
+                        ·
+
+                        ${statusText}
+
+                        <br>
+
+                        ${formatDate(
+                            order.created_at
                         )}
-                    </span>
-
-                    <div class="order-item">
-
-                        ${order.items
-                            .map(
-                                item =>
-                                    `${escapeHTML(
-                                        item.title
-                                    )}
-                                    ×
-                                    ${item.quantity}`
-                            )
-                            .join("<br>")}
 
                     </div>
 
                 </div>
+            `;
 
-            `
-            )
-            .join("");
+        }).join("");
+}
+
+
+function showOrders() {
+
+    const panel =
+        document.getElementById("myOrdersPanel");
+
+    panel.classList.toggle("hidden");
+
+    if (!panel.classList.contains("hidden")) {
+        loadMyOrders();
+    }
 }
 
 
 /* =========================================================
    ADMIN LOGIN
-   Pseudo : Hornet
-   Mot de passe : Hornet
 ========================================================= */
 
 function showAdminLogin() {
 
-    showPage("adminLogin");
+    document
+        .getElementById("adminModal")
+        .classList.remove("hidden");
+
 }
 
 
-function loginAdmin() {
+function closeAdminModal() {
+
+    document
+        .getElementById("adminModal")
+        .classList.add("hidden");
+
+}
+
+
+async function loginAdmin() {
 
     const username =
         document
-            .getElementById(
-                "adminUsername"
-            )
-            .value;
+            .getElementById("adminUsername")
+            .value
+            .trim();
 
     const password =
         document
-            .getElementById(
-                "adminPassword"
-            )
+            .getElementById("adminPassword")
             .value;
 
-    const message =
-        document
-            .getElementById(
-                "adminLoginMessage"
-            );
+    if (!username || !password) {
 
-    if (
-        username === "Hornet" &&
-        password === "Hornet"
-    ) {
-
-        adminLoggedIn = true;
-
-        message.innerHTML =
-            `<p class="success">
-                Connexion réussie !
-            </p>`;
-
-        document
-            .getElementById(
-                "adminUsername"
-            )
-            .value = "";
-
-        document
-            .getElementById(
-                "adminPassword"
-            )
-            .value = "";
-
-        showPage("admin");
-
-    } else {
-
-        message.innerHTML =
-            `<p class="error">
-                Identifiants incorrects.
-            </p>`;
-    }
-}
-
-
-function logoutAdmin() {
-
-    adminLoggedIn = false;
-
-    showPage("home");
-}
-
-
-/* =========================================================
-   ADMIN : LIVRES
-========================================================= */
-
-function renderAdminBooks() {
-
-    const container =
-        document.getElementById(
-            "adminBooks"
-        );
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    books.forEach(book => {
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-        div.className =
-            "card";
-
-        div.innerHTML = `
-
-            <h3>
-                ${escapeHTML(
-                    book.title
-                )}
-            </h3>
-
-            <label>
-                Prix en 💎
-            </label>
-
-            <input
-                type="number"
-                value="${book.price}"
-                min="0"
-                onchange="
-                    updateBookPrice(
-                        ${book.id},
-                        this.value
-                    )
-                "
-            >
-
-            <label>
-                Stock
-            </label>
-
-            <input
-                type="number"
-                value="${book.stock}"
-                min="0"
-                onchange="
-                    updateBookStock(
-                        ${book.id},
-                        this.value
-                    )
-                "
-            >
-
-            <p class="small">
-                Disponible maintenant :
-                ${getAvailableStock(
-                    book.id
-                )}
-            </p>
-
-            <button
-                class="btn red"
-                onclick="
-                    deleteBook(
-                        ${book.id}
-                    )
-                "
-            >
-                Supprimer
-            </button>
-
-        `;
-
-        container.appendChild(div);
-    });
-}
-
-
-function updateBookPrice(
-    id,
-    value
-) {
-
-    const book =
-        books.find(
-            b =>
-                b.id === id
-        );
-
-    if (!book) return;
-
-    book.price =
-        Math.max(
-            0,
-            Number(value)
-        );
-
-    saveData();
-
-    renderAll();
-}
-
-
-function updateBookStock(
-    id,
-    value
-) {
-
-    const book =
-        books.find(
-            b =>
-                b.id === id
-        );
-
-    if (!book) return;
-
-    const newStock =
-        Math.max(
-            0,
-            Number(value)
-        );
-
-    if (
-        newStock <
-        getPendingQuantity(id)
-    ) {
-
-        alert(
-            "Impossible : des commandes en attente utilisent déjà " +
-            getPendingQuantity(id) +
-            " exemplaire(s)."
-        );
-
-        renderAll();
-
-        return;
-    }
-
-    book.stock =
-        newStock;
-
-    saveData();
-
-    renderAll();
-}
-
-
-function deleteBook(id) {
-
-    if (
-        !confirm(
-            "Supprimer définitivement ce livre ?"
-        )
-    ) return;
-
-    if (
-        getPendingQuantity(id) >
-        0
-    ) {
-
-        alert(
-            "Impossible de supprimer ce livre : une commande est encore en attente."
+        showToast(
+            "Remplis les deux champs.",
+            "error"
         );
 
         return;
     }
 
-    books =
-        books.filter(
-            b =>
-                b.id !== id
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc(
+                "admin_login",
+                {
+                    p_username: username,
+                    p_password: password
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+
+            showToast(
+                "Identifiants incorrects.",
+                "error"
+            );
+
+            return;
+        }
+
+        isAdmin = true;
+
+        closeAdminModal();
+
+        openAdmin();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Connexion administrateur impossible.",
+            "error"
         );
-
-    cart =
-        cart.filter(
-            item =>
-                item.bookId !== id
-        );
-
-    saveData();
-
-    renderAll();
+    }
 }
 
 
 /* =========================================================
-   AJOUT LIVRE
+   ADMIN
 ========================================================= */
 
-function addBook() {
+function openAdmin() {
+
+    if (!isAdmin) {
+        showAdminLogin();
+        return;
+    }
+
+    document
+        .getElementById("shopScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("adminScreen")
+        .classList.remove("hidden");
+
+    loadAdmin();
+}
+
+
+function closeAdmin() {
+
+    document
+        .getElementById("adminScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("shopScreen")
+        .classList.remove("hidden");
+
+    loadBooks();
+}
+
+
+async function loadAdmin() {
+
+    await loadAdminBooks();
+    await loadAdminOrders();
+
+}
+
+
+/* =========================================================
+   ADMIN — AJOUTER LIVRE
+========================================================= */
+
+async function addBook() {
 
     const title =
         document
-            .getElementById(
-                "newTitle"
-            )
+            .getElementById("newBookTitle")
             .value
             .trim();
 
     const description =
         document
-            .getElementById(
-                "newDescription"
-            )
+            .getElementById("newBookDescription")
             .value
             .trim();
 
     const price =
         Number(
             document
+                .getElementById("newBookPrice")
+                .value
+        );
+
+    const stock =
+        Number(
+            document
+                .getElementById("newBookStock")
+                .value
+        );
+
+    if (!title) {
+
+        showToast(
+            "Donne un nom au livre.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        !Number.isInteger(price) ||
+        price < 0
+    ) {
+
+        showToast(
+            "Prix invalide.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        !Number.isInteger(stock) ||
+        stock < 0
+    ) {
+
+        showToast(
+            "Stock invalide.",
+            "error"
+        );
+
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .rpc(
+                "admin_create_book",
+                {
+                    p_username: "Hornet",
+                    p_password:
+                        document.getElementById(
+                            "adminPassword"
+                        ).value ||
+                        prompt(
+                            "Mot de passe admin :"
+                        ),
+                    p_title: title,
+                    p_description: description,
+                    p_price: price,
+                    p_stock: stock
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Livre ajouté !",
+            "success"
+        );
+
+        document
+            .getElementById("newBookTitle")
+            .value = "";
+
+        document
+            .getElementById("newBookDescription")
+            .value = "";
+
+        await loadAdminBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Impossible d'ajouter le livre.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   ADMIN — LIVRES
+========================================================= */
+
+async function loadAdminBooks() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc("admin_list_books");
+
+        if (error) {
+            throw error;
+        }
+
+        renderAdminBooks(data || []);
+
+    } catch (error) {
+
+        console.error(error);
+
+        document
+            .getElementById("adminBooks")
+            .innerHTML =
+            `<p>
+                Impossible de charger les livres.
+            </p>`;
+    }
+}
+
+
+function renderAdminBooks(list) {
+
+    const container =
+        document.getElementById("adminBooks");
+
+    if (!list.length) {
+
+        container.innerHTML =
+            `<p style="color:#9ba9c2">
+                Aucun livre.
+            </p>`;
+
+        return;
+    }
+
+    container.innerHTML =
+        list.map(book => {
+
+            return `
+                <div class="adminBook">
+
+                    <div>
+
+                        <strong>
+                            ${escapeHTML(book.title)}
+                        </strong>
+
+                        <div style="
+                            color:#9ba9c2;
+                            font-size:13px;
+                            margin-top:5px;
+                        ">
+
+                            ${book.price_diamonds} 💎
+                            ·
+                            Stock :
+                            ${book.stock}
+
+                        </div>
+
+                    </div>
+
+                    <div class="adminBookControls">
+
+                        <input
+                            id="price-${book.id}"
+                            type="number"
+                            min="0"
+                            value="${book.price_diamonds}"
+                            title="Prix"
+                        >
+
+                        <input
+                            id="stock-${book.id}"
+                            type="number"
+                            min="0"
+                            value="${book.stock}"
+                            title="Stock"
+                        >
+
+                        <button
+                            class="btn btnSmall btnPrimary"
+                            onclick="updateBook('${book.id}')">
+
+                            Sauver
+
+                        </button>
+
+                        <button
+                            class="btn btnSmall btnRed"
+                            onclick="deleteBook('${book.id}')">
+
+                            Suppr.
+
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   ADMIN — MODIFIER LIVRE
+========================================================= */
+
+async function updateBook(bookId) {
+
+    const price =
+        Number(
+            document
                 .getElementById(
-                    "newPrice"
+                    `price-${bookId}`
                 )
                 .value
         );
@@ -1823,659 +1972,583 @@ function addBook() {
         Number(
             document
                 .getElementById(
-                    "newStock"
+                    `stock-${bookId}`
                 )
                 .value
         );
 
-    const image =
-        document
-            .getElementById(
-                "newImage"
-            )
-            .value
-            .trim();
-
-
-    if (!title) {
-
-        alert(
-            "Donne un titre au livre."
-        );
-
-        return;
-    }
-
-
-    const newBook = {
-
-        id:
-            books.length > 0
-                ? Math.max(
-                    ...books.map(
-                        b => b.id
-                    )
-                ) + 1
-                : 1,
-
-        title:
-
-            title,
-
-        description:
-
-            description,
-
-        price:
-
-            Math.max(
-                0,
-                price
-            ),
-
-        stock:
-
-            Math.max(
-                0,
-                stock
-            ),
-
-        image:
-
-            image
-    };
-
-
-    books.push(
-        newBook
-    );
-
-    saveData();
-
-
-    document
-        .getElementById(
-            "newTitle"
-        )
-        .value = "";
-
-    document
-        .getElementById(
-            "newDescription"
-        )
-        .value = "";
-
-    document
-        .getElementById(
-            "newPrice"
-        )
-        .value = "";
-
-    document
-        .getElementById(
-            "newStock"
-        )
-        .value = "";
-
-    document
-        .getElementById(
-            "newImage"
-        )
-        .value = "";
-
-
-    renderAll();
-
-    alert(
-        "Livre ajouté !"
-    );
-}
-
-
-/* =========================================================
-   ADMIN : JOUEURS
-========================================================= */
-
-function renderAdminPlayers() {
-
-    const container =
-        document.getElementById(
-            "adminPlayers"
-        );
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
     if (
-        players.length === 0
+        !Number.isInteger(price) ||
+        price < 0 ||
+        !Number.isInteger(stock) ||
+        stock < 0
     ) {
 
-        container.innerHTML =
-            "<p>Aucun joueur.</p>";
+        showToast(
+            "Valeurs invalides.",
+            "error"
+        );
 
         return;
     }
 
-
-    players.forEach(
-        player => {
-
-            const div =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-            div.className =
-                "card";
-
-            div.innerHTML = `
-
-                <h3>
-                    👤 ${escapeHTML(
-                        player.name
-                    )}
-                </h3>
-
-                <label>
-                    Diamants
-                </label>
-
-                <input
-                    type="number"
-                    min="0"
-                    value="${player.diamonds}"
-                    onchange="
-                        updatePlayerDiamonds(
-                            ${player.id},
-                            this.value
-                        )
-                    "
-                >
-
-                <label>
-                    Réduction (%)
-                </label>
-
-                <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value="${player.discount}"
-                    onchange="
-                        updatePlayerDiscount(
-                            ${player.id},
-                            this.value
-                        )
-                    "
-                >
-
-            `;
-
-            container.appendChild(
-                div
-            );
-        }
-    );
-}
-
-
-function updatePlayerDiamonds(
-    id,
-    value
-) {
-
-    const player =
-        players.find(
-            p =>
-                p.id === id
+    const password =
+        prompt(
+            "Mot de passe administrateur :"
         );
 
-    if (!player) return;
-
-    player.diamonds =
-        Math.max(
-            0,
-            Number(value)
-        );
-
-    saveData();
-
-    renderAll();
-}
-
-
-function updatePlayerDiscount(
-    id,
-    value
-) {
-
-    const player =
-        players.find(
-            p =>
-                p.id === id
-        );
-
-    if (!player) return;
-
-    player.discount =
-        Math.min(
-            100,
-            Math.max(
-                0,
-                Number(value)
-            )
-        );
-
-    saveData();
-
-    renderAll();
-}
-
-
-/* =========================================================
-   ADMIN : COMMANDES
-========================================================= */
-
-function renderAdminOrders() {
-
-    const container =
-        document.getElementById(
-            "adminOrders"
-        );
-
-    if (!container) return;
-
-
-    if (
-        orders.length === 0
-    ) {
-
-        container.innerHTML =
-            "<p>Aucune commande.</p>";
-
+    if (password === null) {
         return;
     }
 
+    try {
 
-    container.innerHTML = "";
-
-
-    orders
-        .slice()
-        .reverse()
-        .forEach(
-            order => {
-
-                const div =
-                    document
-                        .createElement(
-                            "div"
-                        );
-
-                div.className =
-                    "card";
-
-
-                const itemsHTML =
-                    order.items
-                        .map(
-                            item => `
-
-                                <div>
-                                    📖
-                                    ${escapeHTML(
-                                        item.title
-                                    )}
-                                    ×
-                                    ${item.quantity}
-                                    —
-                                    ${item.price}
-                                    💎 / unité
-                                </div>
-
-                            `
-                        )
-                        .join("");
-
-
-                let action = "";
-
-
-                if (
-                    order.status ===
-                    "En attente"
-                ) {
-
-                    action = `
-
-                        <button
-                            class="btn"
-                            onclick="
-                                validateOrder(
-                                    ${order.id}
-                                )
-                            "
-                        >
-                            ✅ Valider la commande
-                        </button>
-
-                        <button
-                            class="btn red"
-                            onclick="
-                                cancelOrder(
-                                    ${order.id}
-                                )
-                            "
-                        >
-                            ❌ Annuler
-                        </button>
-
-                    `;
-
-                } else {
-
-                    action = `
-
-                        <span class="badge">
-                            ${escapeHTML(
-                                order.status
-                            )}
-                        </span>
-
-                    `;
+        const {
+            error
+        } = await supabaseClient
+            .rpc(
+                "admin_update_book",
+                {
+                    p_username: "Hornet",
+                    p_password: password,
+                    p_book_id: bookId,
+                    p_price: price,
+                    p_stock: stock
                 }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Livre mis à jour.",
+            "success"
+        );
+
+        await loadAdminBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Impossible de modifier le livre.",
+            "error"
+        );
+    }
+}
 
 
-                div.innerHTML = `
+/* =========================================================
+   ADMIN — SUPPRIMER
+========================================================= */
 
-                    <h3>
-                        📦 Commande #${order.id}
-                    </h3>
+async function deleteBook(bookId) {
 
-                    <p>
-                        👤
-                        ${escapeHTML(
-                            order.playerName
+    if (
+        !confirm(
+            "Supprimer ce livre ?"
+        )
+    ) {
+        return;
+    }
+
+    const password =
+        prompt(
+            "Mot de passe administrateur :"
+        );
+
+    if (password === null) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .rpc(
+                "admin_delete_book",
+                {
+                    p_username: "Hornet",
+                    p_password: password,
+                    p_book_id: bookId
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Livre supprimé.",
+            "success"
+        );
+
+        await loadAdminBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Impossible de supprimer le livre.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   ADMIN — COMMANDES
+========================================================= */
+
+async function loadAdminOrders() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc("admin_list_orders");
+
+        if (error) {
+            throw error;
+        }
+
+        const orders =
+            data || [];
+
+        const pending =
+            orders.filter(
+                order =>
+                    order.status === "pending"
+            );
+
+        const completed =
+            orders.filter(
+                order =>
+                    order.status === "completed"
+            );
+
+        renderPendingOrders(pending);
+        renderCompletedOrders(completed);
+
+    } catch (error) {
+
+        console.error(error);
+
+        document
+            .getElementById("pendingOrders")
+            .innerHTML =
+            "<p>Erreur de chargement.</p>";
+
+        document
+            .getElementById("completedOrders")
+            .innerHTML =
+            "<p>Erreur de chargement.</p>";
+    }
+}
+
+
+function renderPendingOrders(orders) {
+
+    const container =
+        document.getElementById(
+            "pendingOrders"
+        );
+
+    if (!orders.length) {
+
+        container.innerHTML =
+            `<p style="color:#9ba9c2">
+                Aucune commande en attente.
+            </p>`;
+
+        return;
+    }
+
+    container.innerHTML =
+        orders.map(order => {
+
+            return `
+                <div class="order">
+
+                    <div class="orderTitle">
+                        📖 ${escapeHTML(
+                            order.book_title ||
+                            "Livre"
                         )}
-                    </p>
-
-                    <p>
-                        🕒
-                        ${escapeHTML(
-                            order.date
-                        )}
-                    </p>
-
-                    <div class="order-item">
-                        ${itemsHTML}
                     </div>
 
-                    <p>
+                    <div class="orderMeta">
+
+                        👤
+                        ${escapeHTML(
+                            order.username ||
+                            "Utilisateur"
+                        )}
+
+                        <br>
+
+                        📦 Quantité :
+                        ${order.quantity}
+
+                        <br>
+
                         💎 Total :
-                        <strong>
-                            ${order.total} 💎
-                        </strong>
-                    </p>
+                        ${order.total_price}
 
-                    <p>
-                        Statut :
-                        <span class="badge">
-                            ${escapeHTML(
-                                order.status
-                            )}
-                        </span>
-                    </p>
+                        <br>
 
-                    <br>
+                        🕒
+                        ${formatDate(
+                            order.created_at
+                        )}
 
-                    ${action}
+                    </div>
 
-                `;
+                    <button
+                        class="btn btnGreen"
+                        onclick="validateOrder('${order.id}')">
 
+                        ✅ Valider la commande
 
-                container.appendChild(
-                    div
-                );
-            }
-        );
+                    </button>
+
+                    <button
+                        class="btn btnRed"
+                        onclick="cancelOrder('${order.id}')">
+
+                        Annuler
+
+                    </button>
+
+                </div>
+            `;
+
+        }).join("");
 }
 
 
-/* =========================================================
-   VALIDATION DE COMMANDE
-   C'est ici que le stock est retiré.
-========================================================= */
+function renderCompletedOrders(orders) {
 
-function validateOrder(
-    orderId
-) {
-
-    const order =
-        orders.find(
-            o =>
-                o.id ===
-                orderId
+    const container =
+        document.getElementById(
+            "completedOrders"
         );
 
-    if (!order) return;
+    if (!orders.length) {
 
-
-    if (
-        order.status !==
-        "En attente"
-    ) {
-
-        alert(
-            "Cette commande a déjà été traitée."
-        );
+        container.innerHTML =
+            `<p style="color:#9ba9c2">
+                Aucun historique.
+            </p>`;
 
         return;
     }
 
+    container.innerHTML =
+        orders.map(order => {
 
-    /* Vérification du stock réel */
+            return `
+                <div class="order">
 
-    for (
-        const item of order.items
-    ) {
+                    <div class="orderTitle">
 
-        const book =
-            books.find(
-                b =>
-                    b.id ===
-                    item.bookId
-            );
+                        ✅
+                        ${escapeHTML(
+                            order.book_title ||
+                            "Livre"
+                        )}
 
-        if (!book) {
+                    </div>
 
-            alert(
-                "Le livre " +
-                item.title +
-                " n'existe plus."
-            );
+                    <div class="orderMeta">
 
-            return;
-        }
+                        👤
+                        ${escapeHTML(
+                            order.username ||
+                            "Utilisateur"
+                        )}
 
+                        ·
 
-        if (
-            book.stock <
-            item.quantity
-        ) {
+                        📦
+                        ${order.quantity}
 
-            alert(
-                "Stock insuffisant pour " +
-                item.title +
-                ".\n\n" +
-                "Stock actuel : " +
-                book.stock +
-                "\n" +
-                "Demandé : " +
-                item.quantity
-            );
+                        ·
 
-            return;
-        }
-    }
+                        💎
+                        ${order.total_price}
 
+                        <br>
 
-    /* Retrait du stock */
+                        ${formatDate(
+                            order.completed_at ||
+                            order.created_at
+                        )}
 
-    order.items.forEach(
-        item => {
+                    </div>
 
-            const book =
-                books.find(
-                    b =>
-                        b.id ===
-                        item.bookId
-                );
+                </div>
+            `;
 
-            book.stock -=
-                item.quantity;
-        }
-    );
-
-
-    order.status =
-        "Terminée";
-
-
-    saveData();
-
-    renderAll();
-
-
-    alert(
-        "Commande #" +
-        order.id +
-        " validée !\n\n" +
-        "Le stock a été retiré."
-    );
+        }).join("");
 }
 
 
 /* =========================================================
-   ANNULATION
+   ADMIN — VALIDATION
 ========================================================= */
 
-function cancelOrder(
-    orderId
-) {
-
-    const order =
-        orders.find(
-            o =>
-                o.id ===
-                orderId
-        );
-
-    if (!order) return;
-
+async function validateOrder(orderId) {
 
     if (
-        order.status !==
-        "En attente"
+        !confirm(
+            "Valider cette commande ?\n\nLe stock sera diminué."
+        )
     ) {
-
         return;
     }
 
+    const password =
+        prompt(
+            "Mot de passe administrateur :"
+        );
+
+    if (password === null) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .rpc(
+                "admin_validate_order",
+                {
+                    p_username: "Hornet",
+                    p_password: password,
+                    p_order_id: orderId
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Commande validée et stock mis à jour.",
+            "success"
+        );
+
+        await loadAdmin();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Impossible de valider la commande.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   ADMIN — ANNULATION
+========================================================= */
+
+async function cancelOrder(orderId) {
 
     if (
         !confirm(
             "Annuler cette commande ?"
         )
     ) {
-
         return;
     }
 
-
-    /*
-       Comme le stock n'avait pas encore
-       été retiré, rien n'est ajouté/enlevé.
-    */
-
-    order.status =
-        "Annulée";
-
-
-    saveData();
-
-    renderAll();
-
-
-    alert(
-        "Commande annulée."
-    );
-}
-
-
-/* =========================================================
-   SÉCURITÉ HTML
-========================================================= */
-
-function escapeHTML(
-    text
-) {
-
-    return String(text)
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-        .replaceAll(
-            "'",
-            "&#039;"
+    const password =
+        prompt(
+            "Mot de passe administrateur :"
         );
+
+    if (password === null) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .rpc(
+                "admin_cancel_order",
+                {
+                    p_username: "Hornet",
+                    p_password: password,
+                    p_order_id: orderId
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Commande annulée.",
+            "success"
+        );
+
+        await loadAdmin();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Impossible d'annuler la commande.",
+            "error"
+        );
+    }
 }
 
 
 /* =========================================================
-   RAFRAÎCHISSEMENT
+   LOGOUT
 ========================================================= */
 
-function renderAll() {
+async function logout() {
 
-    renderBooks();
+    await supabaseClient.auth.signOut();
 
-    renderCart();
+    currentUser = null;
+    currentProfile = null;
+    isAdmin = false;
 
-    renderAccount();
-
-    renderAdminBooks();
-
-    renderAdminPlayers();
-
-    renderAdminOrders();
+    showLogin();
 }
 
 
 /* =========================================================
-   DÉMARRAGE
+   REALTIME
 ========================================================= */
 
-renderAll();
+/*
+ * On écoute shop_events.
+ *
+ * Dès qu'un livre ou une commande est modifié,
+ * les navigateurs rechargent leurs données.
+ */
 
-checkAccount();
+supabaseClient
+    .channel("diamond-books-events")
+    .on(
+        "postgres_changes",
+        {
+            event: "*",
+            schema: "public",
+            table: "shop_events"
+        },
+        async () => {
+
+            console.log(
+                "🔄 Changement détecté dans Diamond Books"
+            );
+
+            if (currentUser) {
+
+                await loadBooks();
+                await loadMyOrders();
+
+                if (isAdmin) {
+                    await loadAdmin();
+                }
+
+            }
+
+        }
+    )
+    .subscribe();
+
+
+/*
+ * On écoute également directement les livres.
+ */
+
+supabaseClient
+    .channel("diamond-books-books")
+    .on(
+        "postgres_changes",
+        {
+            event: "*",
+            schema: "public",
+            table: "books"
+        },
+        async () => {
+
+            if (currentUser) {
+                await loadBooks();
+            }
+
+            if (isAdmin) {
+                await loadAdminBooks();
+            }
+
+        }
+    )
+    .subscribe();
+
+
+/* =========================================================
+   ENTER
+========================================================= */
+
+document
+    .getElementById("usernameInput")
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Enter") {
+                createAccount();
+            }
+
+        }
+    );
+
+
+document
+    .getElementById("adminPassword")
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Enter") {
+                loginAdmin();
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+init();
 
 </script>
 
 </body>
 </html>
-```
